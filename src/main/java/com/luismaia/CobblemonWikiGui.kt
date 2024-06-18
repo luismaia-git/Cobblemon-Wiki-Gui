@@ -3,6 +3,7 @@ package com.luismaia
 import com.luismaia.command.CobblemonWikiGuiCommands
 import com.luismaia.config.CobblemonWikiGuiConfig
 import com.luismaia.config.ConfigManager
+import com.luismaia.util.Permissions
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
@@ -16,13 +17,14 @@ object CobblemonWikiGui {
     val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
     val MOD_NAME: String = "Cobblemon Wiki Gui"
     val VERSION: String = "1.0.0"
+    private var instance : CobblemonWikiGui? = null
 
     private var config : CobblemonWikiGuiConfig? = null
     private val configManager: ConfigManager = ConfigManager
-
+    val permissions = Permissions()
 
     fun initialize() {
-
+        this.instance = this
         initConfigBase()
 
         LOGGER.info(
@@ -39,7 +41,7 @@ object CobblemonWikiGui {
     private fun initConfigBase() {
         try {
             configManager.loadConfig()
-            this.config = configManager.config
+            this.config = getConfigCobblemonWikiGui()
         } catch (e: IOException) {
             LOGGER.error("Erro ao carregar config.json")
             LOGGER.info(e.message)
@@ -47,12 +49,19 @@ object CobblemonWikiGui {
     }
 
     fun getConfigCobblemonWikiGui(): CobblemonWikiGuiConfig? {
-        return this.config
+        return this.configManager.config
+    }
+    fun getConfigManager(): ConfigManager {
+        return this.configManager
     }
 
     fun reloadConfigCobblemonWikiGui(playerEntity: ServerPlayerEntity?) {
-        playerEntity?.sendMessage(Text.literal("this feature is incomplete"))
-    //this.configManager.reload(playerEntity)
+        this.configManager.reload(playerEntity)
     }
+
+    fun getInstance(): CobblemonWikiGui? {
+        return this.instance
+    }
+
 
 }

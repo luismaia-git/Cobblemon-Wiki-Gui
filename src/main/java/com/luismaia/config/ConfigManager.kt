@@ -4,16 +4,14 @@ import com.luismaia.CobblemonWikiGui
 import kotlinx.serialization.decodeFromString
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
-import java.io.File
+import org.slf4j.Logger
 import java.io.FileReader
 import java.io.FileWriter
 import java.nio.file.Files
@@ -21,24 +19,21 @@ import java.nio.file.Path
 
 object ConfigManager {
 
-    val logger: org.slf4j.Logger = CobblemonWikiGui.LOGGER
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-
+    private val logger: Logger = CobblemonWikiGui.LOGGER
     private val rootPath : Path =  FabricLoader.getInstance().configDir.resolve("cobblemon-wiki-gui/")
-
     private val configFilepathName = rootPath.resolve("config.json")
     private val configFile = configFilepathName.toFile()
 
     var config: CobblemonWikiGuiConfig? = null
-
-
+    
     init {
         logger.info("============================================")
-        logger.info("Inicializando modulo Config")
+        logger.info("Initialize Config module")
         logger.info("--------------------------------------------")
         initConfig()
         logger.info("============================================")
     }
+
     private fun initConfig(){
 
         val parentDirectory = configFilepathName.parent
@@ -68,24 +63,25 @@ object ConfigManager {
     }
 
     fun loadConfig() {
-        when (val status = configFileStatus()) {
-            CONFIG_FILE_STATUS.NOT_EXIST -> {
+        when (configFileStatus()) {
+            ConfigFileStatus.NOT_EXIST -> {
                 createFileConfig(null)
                 createInitialDataConfigJson(null)
             }
-            CONFIG_FILE_STATUS.EMPTY -> {
+            ConfigFileStatus.EMPTY -> {
                 logger.info("Config file is empty.")
                 createInitialDataConfigJson(null)
             }
-            CONFIG_FILE_STATUS.INVALID -> {
+            ConfigFileStatus.INVALID -> {
                 // Execute code for INVALID
                 logger.info("Config file is invalid.")
                 logger.info("Format the file \"config.json\" correctly")
             }
-            CONFIG_FILE_STATUS.VALID -> {
+            ConfigFileStatus.VALID -> {
                 // Execute code for VALID
                 logger.info("Config file is valid.")
                 logger.info("Loading config.json")
+                val gson = Gson()
                 FileReader(configFile).use { reader ->
                     config = gson.fromJson(reader, CobblemonWikiGuiConfig::class.java)
                 }
@@ -99,6 +95,7 @@ object ConfigManager {
 
         try {
             configFile.parentFile.mkdirs()
+            val gson = Gson()
             FileWriter(configFile).use { writer ->
                 gson.toJson(CobblemonWikiGuiConfig(), writer)
             }
@@ -113,16 +110,16 @@ object ConfigManager {
         player?.sendMessage(Text.literal(config?.chatTitle).setStyle(Style.EMPTY.withColor(Formatting.GREEN)).append(Text.literal("Reloading config.json...")))
         logger.info("Reloading config.json...")
 
-        when (val status = configFileStatus()) {
-            CONFIG_FILE_STATUS.NOT_EXIST -> {
+        when (configFileStatus()) {
+            ConfigFileStatus.NOT_EXIST -> {
                 createFileConfig(player)
                 createInitialDataConfigJson(player)
             }
-            CONFIG_FILE_STATUS.EMPTY -> {
+            ConfigFileStatus.EMPTY -> {
                 logger.info("Config file is empty.")
                 createInitialDataConfigJson(player)
             }
-            CONFIG_FILE_STATUS.INVALID -> {
+            ConfigFileStatus.INVALID -> {
                 // Execute code for INVALID
                 logger.info("Config file is invalid.")
                 logger.info("Format the file \"config.json\" correctly")
@@ -130,12 +127,13 @@ object ConfigManager {
                 player?.sendMessage(Text.literal(config?.chatTitle).setStyle(Style.EMPTY.withColor(Formatting.GREEN)).append(Text.literal("Config file is invalid. Format the file \"config.json\" correctly")).setStyle(Style.EMPTY.withColor(Formatting.RED)))
 
             }
-            CONFIG_FILE_STATUS.VALID -> {
+            ConfigFileStatus.VALID -> {
                 // Execute code for VALID
                 logger.info("Config file is valid.")
                 logger.info("Re-Loading config.json")
+                val gson = Gson()
                 FileReader(configFile).use { reader ->
-                    config = gson.fromJson(reader, CobblemonWikiGuiConfig::class.java)
+                    this.config = gson.fromJson(reader, CobblemonWikiGuiConfig::class.java)
                 }
 
                 player?.sendMessage(Text.literal(config?.chatTitle).setStyle(Style.EMPTY.withColor(Formatting.GREEN)).append(Text.literal("Success reload config.json")))
@@ -143,39 +141,43 @@ object ConfigManager {
         }
     }
 
-    fun getRootPath() : Path {
+
+    private fun getRootPath() : Path {
         return this.rootPath
     }
 
     private fun validateConfigJson(json: String): Boolean {
         return try {
             val jsonParser = Json { ignoreUnknownKeys = true }
+
             jsonParser.decodeFromString<CobblemonWikiGuiConfig>(json)
             true
         } catch (e: SerializationException) {
-            logger.error("Serialization exception! ${e}")
+            logger.error("Serialization exception! $e")
+            e.printStackTrace()
             false
         }
     }
 
-    private fun configFileStatus(): CONFIG_FILE_STATUS {
+    private fun configFileStatus(): ConfigFileStatus {
 
-        if(!configFileExists()) return CONFIG_FILE_STATUS.NOT_EXIST
-        if(!configFileNotEmpty()) return CONFIG_FILE_STATUS.EMPTY
+        if(!configFileExists()) return ConfigFileStatus.NOT_EXIST
+        if(!configFileNotEmpty()) return ConfigFileStatus.EMPTY
+
         try { //improve it, because any anomaly character in config.json throws error
-            if(!validateConfigJson(Json.encodeToString(configFile.readText())))
+            if(!validateConfigJson(this.configFile.readText()))
 
-                return CONFIG_FILE_STATUS.INVALID
+                return ConfigFileStatus.INVALID
         }catch (e: SerializationException){
-            return CONFIG_FILE_STATUS.INVALID
+            return ConfigFileStatus.INVALID
         } catch (e: IllegalArgumentException){
-            return CONFIG_FILE_STATUS.INVALID
+            return ConfigFileStatus.INVALID
         }
 
-        return CONFIG_FILE_STATUS.VALID
+        return ConfigFileStatus.VALID
     }
 
-    private enum class CONFIG_FILE_STATUS(number: Int) {
+    private enum class ConfigFileStatus(number: Int) {
         NOT_EXIST(1),
         EMPTY(2),
         INVALID(3),
@@ -192,6 +194,10 @@ object ConfigManager {
 
     private fun configFileNotEmpty(): Boolean {
         return this.configFile.length() != 0L
+    }
+
+    fun isEnablePermissionNodes(): Boolean {
+        return this.config?.isEnablePermissionNodes ?: return false
     }
 
 }

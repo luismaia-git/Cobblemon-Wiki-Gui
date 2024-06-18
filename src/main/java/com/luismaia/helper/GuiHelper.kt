@@ -10,7 +10,6 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.pokemon.Species
-import com.luismaia.util.ItemBuilder
 import eu.pb4.sgui.api.GuiHelpers
 import eu.pb4.sgui.api.elements.GuiElement
 import eu.pb4.sgui.api.elements.GuiElementBuilder

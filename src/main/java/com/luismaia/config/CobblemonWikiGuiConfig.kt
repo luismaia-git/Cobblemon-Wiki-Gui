@@ -1,6 +1,4 @@
 package com.luismaia.config
-
-
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,11 +24,12 @@ data class CobblemonWikiGuiConfig (
     var forms : String = "Forms",
     var dynamax : String = "Dynamax",
     var baseExpYield : String = "Base Exp Yield",
-    var weakness : String = "Is weak against",
+    var weakness : String = "Is weak against:",
     var resistant : String = "Resistant against:",
     var immune : String = "Immune against:",
     var pokeInfo : String = "Click to get more info",
     var pokewikiErrorNotplayer: String = "This command must be ran by a player.",
     var chatTitle: String = "[Cobblemon Wiki Gui] ",
+    var isEnablePermissionNodes: Boolean = true,
 )
 

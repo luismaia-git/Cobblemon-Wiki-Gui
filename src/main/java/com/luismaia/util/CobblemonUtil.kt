@@ -1,14 +1,11 @@
 package com.luismaia.util
 
+import com.cobblemon.mod.common.api.drop.ItemDropEntry
 import com.cobblemon.mod.common.api.pokemon.evolution.Evolution
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.spawning.CobblemonSpawnPools
-
-import com.cobblemon.mod.common.api.spawning.condition.BucketPrecalculation
-import com.cobblemon.mod.common.api.spawning.condition.ContextPrecalculation
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.spawning.detail.SpawnDetail
-import com.cobblemon.mod.common.api.spawning.detail.SpawnPool
 import com.cobblemon.mod.common.api.text.aqua
 import com.cobblemon.mod.common.api.text.plus
 import com.cobblemon.mod.common.api.text.text
@@ -16,6 +13,9 @@ import com.cobblemon.mod.common.api.text.yellow
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.pokemon.Species
 import com.cobblemon.mod.common.util.asTranslated
+import com.luismaia.CobblemonWikiGui
+import com.luismaia.config.CobblemonWikiGuiConfig
+
 import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
@@ -107,7 +107,7 @@ object CobblemonUtil {
     }
 
     fun getCatchRateToWikiGui(pokemon: Species): MutableList<Text> {
-        var lore : MutableList<Text> = ArrayList()
+        val lore : MutableList<Text> = ArrayList()
         lore.add(getCatchRate(pokemon))
         return toWikiGui(lore)
     }
@@ -116,29 +116,37 @@ object CobblemonUtil {
         return toWikiGui(getEvolutions(pokemon))
     }
 
-    private fun getSpawnDetails(species: Species) : List<SpawnDetail> {
-        val spawnDetails = CobblemonSpawnPools.WORLD_SPAWN_POOL.filter {
-                x -> x.id.startsWith("${species.resourceIdentifier.path}-")
-        }
+    private fun getSpawnDetails(species: Species) : List<PokemonSpawnDetail> {
+
+        val cobblemonSpawnPool = CobblemonSpawnPools.WORLD_SPAWN_POOL
+
+        val spawnDetails = cobblemonSpawnPool
+            .filterIsInstance<PokemonSpawnDetail>()
+            .filter {
+                it.pokemon.species != null &&
+                        it.pokemon.species == species.resourceIdentifier.path
+
+            }
+
         return spawnDetails
     }
 
     fun getSpawnTime(species: Species): MutableList<Text> {
         val dayCycleMap = mapOf(
-            "any time" to listOf(0..23999),
-            "day" to listOf(23460..12541),
-            "night" to listOf(12542..23459),
-            "noon" to listOf(5000..6999),
-            "midnight" to listOf(17000..18999),
-            "dawn" to listOf(22300..166),
-            "dusk" to listOf(11834..13701),
-            "twilight" to listOf(11834..13701, 22300..166),
-            "morning" to listOf(0..4999),
-            "afternoon" to listOf(7000..12039),
-            "any time" to listOf(0..23999),
+            "Any time" to listOf(0..23999),
+            "Day" to listOf(23460 downTo 12541),
+            "Night" to listOf(12542..23459),
+            "Noon" to listOf(5000..6999),
+            "Midnight" to listOf(17000..18999),
+            "Dawn" to listOf(22300 downTo 166),
+            "Dusk" to listOf(11834..13701),
+            "Twilight" to listOf(11834..13701, 22300 downTo 166),
+            "Morning" to listOf(0..4999),
+            "Afternoon" to listOf(7000..12039),
+            "Any time" to listOf(0..23999),
         )
 
-        var spawnDetailsList = getSpawnDetails(species)
+        val spawnDetailsList = getSpawnDetails(species)
 
         val timeRanges = mutableListOf<IntRange>()
 
@@ -154,11 +162,11 @@ object CobblemonUtil {
 
         for ((cycleName, cycleRanges) in dayCycleMap) {
             if (cycleRanges.any { range -> timeRanges.any { it == range } }) {
-                matchingCycles.add(cycleName.text())
+                matchingCycles.add(cycleName.text().yellow())
             }
         }
         if (matchingCycles.isEmpty()) {
-            matchingCycles.add(Text.literal("Any time"))
+            matchingCycles.add(Text.literal("Any time").yellow())
         }
         return matchingCycles
     }
@@ -166,7 +174,7 @@ object CobblemonUtil {
     private fun getSpawnBiomes(species: Species, world: World): MutableList<Text> {
         val biomes = BiomeUtils.getAllBiomes(world)
         val validBiomes = biomes.filter { biome ->
-            getSpawnDetails(species).any() { s ->
+            getSpawnDetails(species).any { s ->
                 s.conditions.any { c ->
                     BiomeUtils.canSpawnAt(biome.biome, world, c)
                 }
@@ -202,7 +210,7 @@ object CobblemonUtil {
         return toWikiGui(getSpawnBiomes(species, world))
     }
 
-    fun getMovesByLevel(species : Species): MutableList<Text> {
+    private fun getMovesByLevel(species : Species): MutableList<Text> {
         val lore: MutableList<Text> = ArrayList()
         var i = 0
         var formattedText = "".text()
@@ -334,12 +342,21 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getBaseFriendship(species: Species): MutableText {
+    private fun getBaseFriendship(species: Species): MutableText {
         return Text.literal("Friendship - ").aqua().append(species.baseFriendship.toString().yellow())
     }
 
     fun getDrops(species: Species): MutableList<Text> {
-        val payload: MutableList<Text> = ArrayList();
+        val payload: MutableList<Text> = ArrayList()
+
+        val drops = species.drops.entries.filterIsInstance<ItemDropEntry>()
+
+        drops.forEach { payload.add(Text.translatable(it.item.toTranslationKey()).aqua().append(Text.literal(" §e"+ it.percentage.toString()+ "%")))}
+
+        if(payload.isEmpty()){
+            payload.add(Text.literal("§eNo Drops"))
+            return payload
+        }
         return payload
     }
 
@@ -359,7 +376,7 @@ object CobblemonUtil {
     }
 
     fun getForms(species: Species): MutableList<Text> {
-        val payload: MutableList<Text> = ArrayList();
+        val payload: MutableList<Text> = ArrayList()
         species.forms.forEach{
             payload.add(it.name.yellow())
         }
@@ -367,7 +384,8 @@ object CobblemonUtil {
     }
 
     fun getEffectiveness(species: Species): MutableList<Text> {
-        val lore: MutableList<Text> = ArrayList();
+        val lore: MutableList<Text> = ArrayList()
+        val config = CobblemonWikiGui.getInstance()?.getConfigCobblemonWikiGui()
 
         val weaknessList = ElementalTypes.all().map { t ->
             t to TypeChart.getEffectiveness(t, species.types)
@@ -393,7 +411,7 @@ object CobblemonUtil {
 
 
         if (weaknessList.isNotEmpty()) {
-            val mutableText = Text.translatable("cobblemon-wiki-gui.wiki.weakness")
+            val mutableText = Text.literal(config?.weakness ?: CobblemonWikiGuiConfig().weakness)
             for (elementalType in weaknessList) {
                 mutableText.append(" ".text())
                 mutableText.append(
@@ -408,7 +426,7 @@ object CobblemonUtil {
         }
 
         if (resistantList.isNotEmpty()) {
-            val mutableText = Text.translatable("cobblemon-wiki-gui.wiki.resistant")
+            val mutableText = Text.literal(config?.resistant ?: CobblemonWikiGuiConfig().resistant)
             for (elementalType in resistantList) {
                 mutableText.append(" ".text())
                 mutableText.append(
@@ -423,7 +441,7 @@ object CobblemonUtil {
         }
 
         if (immuneList.isNotEmpty()) {
-            val mutableText = Text.translatable("cobblemon-wiki-gui.wiki.immune")
+            val mutableText = Text.translatable(config?.immune ?: CobblemonWikiGuiConfig().immune)
             for (elementalType in immuneList) {
                 mutableText.append(" ".text())
                 mutableText.append(

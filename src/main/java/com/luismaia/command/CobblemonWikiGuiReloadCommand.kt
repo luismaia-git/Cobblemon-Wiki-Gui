@@ -15,13 +15,27 @@ import net.minecraft.text.Text
 
 
 object CobblemonWikiGuiReloadCommand {
-    const val NAME: String = "pwikigui"
+    const val NAME: String = "cobblemonwiki"
+    var permission = CobblemonWikiGui.permissions.getPermission("CWGReload")
 
+    private fun requiresPermission(context: ServerCommandSource): Boolean {
+        if (CobblemonWikiGui.getConfigManager().isEnablePermissionNodes()) {
+            if (context.isExecutedByPlayer) {
+                return CobblemonWikiGui.permissions.hasPermission(context.player!!,
+                    this.permission!!)
+            } else {
+                return true
+            }
+        } else {
+            return true
+        }
+    }
     fun register(
         dispatcher: CommandDispatcher<ServerCommandSource>,
     ) {
         dispatcher.register(
             CommandManager.literal(NAME)
+                .requires(this::requiresPermission)
                 .then(
                     CommandManager.argument("reload", StringArgumentType.string())
                         .executes { context: CommandContext<ServerCommandSource> ->

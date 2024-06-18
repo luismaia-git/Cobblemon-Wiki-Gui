@@ -17,52 +17,55 @@ import net.minecraft.text.Text
 object PokeWikiCommand {
     const val NAME: String = "pokewiki"
     val ALIASES: List<String> = listOf("pwiki", "pokemonwiki","cobblemonwiki", "cobblewiki", "cwiki")
+    var permission = CobblemonWikiGui.permissions.getPermission("CWGShow")
+
+    private fun requiresPermission(context: ServerCommandSource): Boolean {
+        if (CobblemonWikiGui.getConfigManager().isEnablePermissionNodes()) {
+            if (context.isExecutedByPlayer) {
+                return CobblemonWikiGui.permissions.hasPermission(context.player!!,
+                    this.permission!!)
+            } else {
+                return true
+            }
+        } else {
+            return true
+        }
+    }
 
     fun register(
         dispatcher: CommandDispatcher<ServerCommandSource>,
     ) {
-        dispatcher.register(
-            CommandManager.literal(NAME)
-                .then(
-                    CommandManager.argument("pokemon", pokemon())
-                        .executes { context: CommandContext<ServerCommandSource> ->
-                            execute(
-                                context, null
-                            )
-                        }.then(CommandManager.argument("player", StringArgumentType.word())
-                            .executes { ctx ->
-                                val playerName = StringArgumentType.getString(ctx, "player")
-                                execute(
-                                    ctx, playerName
-                                )
-                            }
+        val root = CommandManager.literal(NAME)
+            .requires(this::requiresPermission)
+            .then(
+                CommandManager.argument("pokemon", pokemon())
+                    .executes { context: CommandContext<ServerCommandSource> ->
+                        execute(
+                            context, null
                         )
-                )
-        )
+                    }.then(CommandManager.argument("player", StringArgumentType.word())
+                        .executes { ctx ->
+                            val playerName = StringArgumentType.getString(ctx, "player")
+                            execute(
+                                ctx, playerName
+                            )
+                        }
+                    )
+            ).build()
+
+        dispatcher.root.addChild(root)
 
         for (alias: String in ALIASES) {
-            dispatcher.register(
-                CommandManager.literal(alias)
-                    .then(
-                        CommandManager.argument("pokemon", pokemon())
-                            .executes { context: CommandContext<ServerCommandSource> ->
-                                execute(
-                                    context, null
-                                )
-                            }.then(CommandManager.argument("player", StringArgumentType.word())
-                                .executes { ctx ->
-                                    val playerName = StringArgumentType.getString(ctx, "player")
-                                    execute(
-                                        ctx, playerName
-                                    )
-                                }
-                            )
-                    )
-            )
+            dispatcher.register(CommandManager.literal(alias).redirect(root).executes {
+                ctx ->
+                val playerName = StringArgumentType.getString(ctx, "player")
+                execute(
+                    ctx, playerName
+                )
+             })
+
         }
-
     }
-
 
     fun execute(context: CommandContext<ServerCommandSource>, playerName: String?): Int {
         val species = getPokemon(context, "pokemon")

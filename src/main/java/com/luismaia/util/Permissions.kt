@@ -14,7 +14,8 @@ class Permissions {
          */
         init {
             // Add you permissions here.
-            createPermission("PokeJourneysCommand", "pokejourneys.pwiki.user", 1)
+            createPermission("CWGShow", "cobblemon-wiki-gui.pwiki.user", 1)
+            createPermission("CWGReload", "cobblemon-wiki-gui.pwiki.reload", 2)
         }
 
         /**

@@ -3,6 +3,7 @@ package com.luismaia.gui
 import com.cobblemon.mod.common.Cobblemon.MODID
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies.getByPokedexNumber
+import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.pokemon.Species
 import com.luismaia.CobblemonWikiGui
 import com.luismaia.config.CobblemonWikiGuiConfig
@@ -20,9 +21,10 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
 object PokeWikiGui {
-    private var config = CobblemonWikiGui.getConfigCobblemonWikiGui()
+
 
     fun open(species: Species, playerEntity: ServerPlayerEntity): SimpleGui {
+
         val content = contentMain(species, playerEntity)
 
         if (content.size > MAX_CONTENT) {
@@ -30,7 +32,7 @@ object PokeWikiGui {
         }
 
         val gui = SimpleGui(ScreenHandlerType.GENERIC_9X6, playerEntity, false)
-        gui.setTitle(Text.literal("\u00A7l        Pokemon Wiki"))
+        gui.setTitle(Text.literal("           Pokemon Wiki").red())
 
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL,gui, 0, 0, 8, RED_PANE)
         GuiHelper.setLine(GuiHelper.LineType.VERTICAL, gui, 0, 1, 3, RED_PANE)
@@ -63,6 +65,7 @@ object PokeWikiGui {
     private val MAX_CONTENT: Int = CONTENT_SPACE.size
 
     private fun createRelativeButton(species: Species, step: Int): GuiElementBuilder {
+        var config = CobblemonWikiGui.getInstance()?.getConfigCobblemonWikiGui()
         val relative = getByPokedexNumber(species.nationalPokedexNumber + step, MODID)
         if(relative != null){
             return GuiHelper.createPokemonButton(relative)
@@ -78,53 +81,62 @@ object PokeWikiGui {
     }
 
     private fun contentMain(species: Species, serverPlayerEntity: ServerPlayerEntity): Array<GuiElement?> {
-
+        var config = CobblemonWikiGui.getInstance()?.getConfigCobblemonWikiGui()
         val content: Array<GuiElement?> = arrayOf(
 
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LIGHT_BALL)).setName(Text.literal(config?.type ?: CobblemonWikiGuiConfig().type))
                     .setLore(CobblemonUtil.getTypeToWikiGui(species).toMutableList())
+                .hideFlags()
                     .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.ELECTIRIZER)).setName(Text.literal(config?.effectiveness ?: CobblemonWikiGuiConfig().effectiveness))
                 .setLore(CobblemonUtil.getEffectiveness(species))
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(Helper.removeLore(ItemStack(CobblemonItems.POKE_BALL)))
                 .setName(Text.literal(config?.catchrate ?: CobblemonWikiGuiConfig().catchrate))
                 .setLore(CobblemonUtil.getCatchRateToWikiGui(species))
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.WEAKNESS_POLICY))
                 .setName(Text.literal(config?.basestats ?: CobblemonWikiGuiConfig().basestats)).setLore(
                     CobblemonUtil.getBaseStatsToWikiGui(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.OAK_SAPLING))
                 .setName(Text.literal(config?.spawnbiome ?: CobblemonWikiGuiConfig().spawnbiome))
                 .setLore(CobblemonUtil.getSpawnBiomesToWikiGui(species, serverPlayerEntity.world))
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.CLOCK))
                 .setName(Text.literal(config?.spawntime ?: CobblemonWikiGuiConfig().spawntime))
                 .setLore(CobblemonUtil.getSpawnTime(species))
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createPokemonButton(species)
                 .setName(Text.literal(config?.evolutions ?: CobblemonWikiGuiConfig().evolutions))
                 .setLore(CobblemonUtil.getEvolutionsToWikiGui(species))
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.ABILITY_CAPSULE))
                 .setName(Text.literal(config?.abilities ?: CobblemonWikiGuiConfig().abilities)).setLore(
                     CobblemonUtil.getAbilities(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LEVEL_BALL))
                 .setName(Text.literal(config?.movesbylevel ?: CobblemonWikiGuiConfig().movesbylevel)).setLore(
                     CobblemonUtil.getMovesByLevelToWikiGui(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_13))
@@ -132,18 +144,21 @@ object PokeWikiGui {
                 .setLore(
                     CobblemonUtil.getTmMoves(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_PIGSTEP))
                 .setName(Text.literal(config?.tutorMoves ?: CobblemonWikiGuiConfig().tutorMoves)).setLore(
                     CobblemonUtil.getTutorMoves(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_5))
                 .setName(Text.literal(config?.evolutionMoves ?: CobblemonWikiGuiConfig().evolutionMoves)).setLore(
                     CobblemonUtil.getEvolutionMoves(species)
                 )
+                .hideFlags()
                 .build()
 
             ,
@@ -151,31 +166,42 @@ object PokeWikiGui {
                 .setName(Text.literal(config?.formChangeMoves ?: CobblemonWikiGuiConfig().formChangeMoves)).setLore(
                     CobblemonUtil.getFormChangeMoves(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.OVAL_STONE))
                 .setName(Text.literal(config?.eggMoves ?: CobblemonWikiGuiConfig().eggMoves)).setLore(
                     CobblemonUtil.getEggMoves(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LUCKY_EGG))
                 .setName(Text.literal(config?.eggGroups ?: CobblemonWikiGuiConfig().eggGroups)).setLore(
                     CobblemonUtil.getEggGroups(species)
                 )
+                .hideFlags()
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.NORMAL_GEM))
                 .setName(Text.literal(config?.forms ?: CobblemonWikiGuiConfig().forms)).setLore(
                     CobblemonUtil.getForms(species)
                 )
+                .hideFlags()
                 .build()
-
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.AIR_BALLOON))
                 .setName(Text.literal(config?.dynamax ?: CobblemonWikiGuiConfig().dynamax)).setLore(
                     CobblemonUtil.getDynamax(species)
                 )
+                .hideFlags()
+                .build()
+            ,
+            GuiHelper.createEmptyButton(ItemStack(Items.BONE))
+                .setName(Text.literal(config?.drops ?: CobblemonWikiGuiConfig().drops)).setLore(
+                    CobblemonUtil.getDrops(species)
+                )
+                .hideFlags()
                 .build()
         )
         return content
