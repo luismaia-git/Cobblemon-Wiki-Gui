@@ -1,6 +1,5 @@
 package com.luismaia
 
-import com.cobblemon.mod.common.Cobblemon
 import com.luismaia.command.CobblemonWikiGuiCommands
 import com.luismaia.config.CobblemonWikiGuiConfig
 import com.luismaia.config.ConfigManager

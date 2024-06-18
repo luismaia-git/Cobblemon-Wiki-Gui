@@ -26,7 +26,7 @@ object ConfigManager {
 
     private val rootPath : Path =  FabricLoader.getInstance().configDir.resolve("cobblemon-wiki-gui/")
 
-    private val configFilepathName = FabricLoader.getInstance().configDir.resolve(rootPath).resolve("config.json")
+    private val configFilepathName = rootPath.resolve("config.json")
     private val configFile = configFilepathName.toFile()
 
     var config: CobblemonWikiGuiConfig? = null
@@ -40,11 +40,11 @@ object ConfigManager {
         logger.info("============================================")
     }
     private fun initConfig(){
-        /*
+
         val parentDirectory = configFilepathName.parent
         if (parentDirectory != null && Files.notExists(parentDirectory)) {
             Files.createDirectories(parentDirectory)
-        }*/
+        }
         createFileConfig(null)
     }
     private fun createFileConfig(player: ServerPlayerEntity?){
