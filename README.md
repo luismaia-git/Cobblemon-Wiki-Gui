@@ -5,6 +5,8 @@ This is a sidemod for [Cobblemon](https://cobblemon.com/)
 
 - Pokémon Wiki : an interface that allows you to view Pokémon information (such as pokédex).
 
+#### I strongly recommend that you only use the server side
+
 ### Features
 
 The Cobblemon wiki gui allows you to view:
