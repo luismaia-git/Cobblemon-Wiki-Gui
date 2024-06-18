@@ -68,7 +68,8 @@ The config.json file, located under config/cobblemon-wiki-gui, contains the foll
   "immune": "Immune against:",
   "pokeInfo": "Click to get more info",
   "pokewikiErrorNotplayer": "This command must be ran by a player.",
-  "chatTitle": "[Cobblemon Wiki Gui] "
+  "chatTitle": "[Cobblemon Wiki Gui] ",
+  "isEnablePermissionNodes": true
 }
 ```
 
