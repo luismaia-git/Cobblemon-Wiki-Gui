@@ -3,68 +3,74 @@ package com.luismaia.command
 import com.cobblemon.mod.common.command.argument.PokemonArgumentType.Companion.getPokemon
 import com.cobblemon.mod.common.command.argument.PokemonArgumentType.Companion.pokemon
 import com.luismaia.CobblemonWikiGui
-import com.luismaia.config.CobblemonWikiGuiConfig
 import com.luismaia.gui.PokeWikiGui
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
+import net.minecraft.command.argument.EntityArgumentType
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 
 
 object PokeWikiCommand {
-    const val NAME: String = "pokewiki"
-    val ALIASES: List<String> = listOf("pwiki", "pokemonwiki","cobblemonwiki", "cobblewiki", "cwiki")
-    var permission = CobblemonWikiGui.permissions.getPermission("CWGShow")
 
-    private fun requiresPermission(context: ServerCommandSource): Boolean {
+    val ALIASES: List<String> = listOf("pokewiki","pwiki", "pokemonwiki","cobblemonwiki", "cobblewiki", "cwiki")
+    var permissionUser = CobblemonWikiGui.permissions.getPermission("CWGShow")
+    var permissionAdmin = CobblemonWikiGui.permissions.getPermission("CWGShowAnotherPlayer")
+
+    private fun requiresPermissionUser(context: ServerCommandSource): Boolean {
         if (CobblemonWikiGui.getConfigManager().isEnablePermissionNodes()) {
             if (context.isExecutedByPlayer) {
                 return CobblemonWikiGui.permissions.hasPermission(context.player!!,
-                    this.permission!!)
+                    permissionUser!!)
             } else {
                 return true
             }
-        } else {
-            return true
         }
+
+        return true
     }
 
-    fun register(
-        dispatcher: CommandDispatcher<ServerCommandSource>,
-    ) {
-        val root = CommandManager.literal(NAME)
-            .requires(this::requiresPermission)
-            .then(
-                CommandManager.argument("pokemon", pokemon())
-                    .executes { context: CommandContext<ServerCommandSource> ->
-                        execute(
-                            context, null
-                        )
-                    }.then(CommandManager.argument("player", StringArgumentType.word())
-                        .executes { ctx ->
-                            val playerName = StringArgumentType.getString(ctx, "player")
-                            execute(
-                                ctx, playerName
-                            )
-                        }
-                    )
-            ).build()
-
-        dispatcher.root.addChild(root)
-
-        for (alias: String in ALIASES) {
-            dispatcher.register(CommandManager.literal(alias).redirect(root).executes {
-                ctx ->
-                val playerName = StringArgumentType.getString(ctx, "player")
-                execute(
-                    ctx, playerName
-                )
-             })
-
+    private fun requiresPermissionAdmin(context: ServerCommandSource): Boolean {
+        if (CobblemonWikiGui.getConfigManager().isEnablePermissionNodes()) {
+            if (context.isExecutedByPlayer) {
+                val hasPermission = CobblemonWikiGui.permissions.hasPermission(context.player!!, permissionAdmin!!)
+                return hasPermission
+            } else {
+                return true
+            }
         }
+
+        return true
+    }
+
+
+    fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
+        for (alias: String in ALIASES) {
+            dispatcher.register(
+                CommandManager.literal(alias)
+                    .requires(this::requiresPermissionUser)
+                    .executes { ctx ->
+                        execute(ctx, null)
+                    }
+                    .then(
+                        CommandManager.argument("pokemon", pokemon())
+                            .executes { ctx ->
+                                execute(ctx, null)
+                            }
+                            .then(
+                                CommandManager.argument("player", EntityArgumentType.player())
+                                    .requires(this::requiresPermissionAdmin)
+                                    .executes { ctx ->
+                                        val targetPlayer = EntityArgumentType.getPlayer(ctx, "player")
+                                        execute(ctx, targetPlayer.entityName)
+                                    }
+                            )
+                    )
+            )
+        }
+
     }
 
     fun execute(context: CommandContext<ServerCommandSource>, playerName: String?): Int {
@@ -72,23 +78,20 @@ object PokeWikiCommand {
         val playerContext = context.source.player
 
         if (playerName != null) {
-            val player = context.source.server.playerManager.getPlayer(playerName)
-            if (player != null) { //inseriu o nome do player
-                PokeWikiGui.open(species, player)
-                return Command.SINGLE_SUCCESS
+            val playerTarget = context.source.server.playerManager.getPlayer(playerName)
+            if (playerTarget != null) {
+                PokeWikiGui.open(species, playerTarget)
             } else {
-                //se o player nao foi achado
                 context.source.sendError(Text.literal("Player $playerName not found"))
-                return Command.SINGLE_SUCCESS
             }
         } else {
             if (!context.source.isExecutedByPlayer) {
-                context.source.sendMessage(Text.literal(CobblemonWikiGui.getConfigCobblemonWikiGui()?.pokewikiErrorNotplayer
-                    ?: CobblemonWikiGuiConfig().pokewikiErrorNotplayer))
-                return Command.SINGLE_SUCCESS
+                context.source.sendMessage(Text.literal("Command without target player cannot be executed by console"))
+            }else {
+                if (playerContext != null) PokeWikiGui.open(species, playerContext)
             }
-            if(playerContext != null) PokeWikiGui.open(species, playerContext)
         }
+
         return Command.SINGLE_SUCCESS
     }
 }

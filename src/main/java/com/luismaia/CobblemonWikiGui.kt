@@ -6,7 +6,6 @@ import com.luismaia.config.ConfigManager
 import com.luismaia.util.Permissions
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -16,7 +15,7 @@ object CobblemonWikiGui {
     val MOD_ID: String = "cobblemon-wiki-gui"
     val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
     val MOD_NAME: String = "Cobblemon Wiki Gui"
-    val VERSION: String = "1.0.0"
+    val VERSION: String = "1.0.2"
     private var instance : CobblemonWikiGui? = null
 
     private var config : CobblemonWikiGuiConfig? = null
@@ -43,7 +42,7 @@ object CobblemonWikiGui {
             configManager.loadConfig()
             this.config = getConfigCobblemonWikiGui()
         } catch (e: IOException) {
-            LOGGER.error("Erro ao carregar config.json")
+            LOGGER.error("Error loading config.json")
             LOGGER.info(e.message)
         }
     }

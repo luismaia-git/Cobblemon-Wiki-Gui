@@ -14,8 +14,9 @@ class Permissions {
          */
         init {
             // Add you permissions here.
-            createPermission("CWGShow", "cobblemon-wiki-gui.pwiki.user", 1)
-            createPermission("CWGReload", "cobblemon-wiki-gui.pwiki.reload", 2)
+            createPermission("CWGShow", "cwg.use", 1)
+            createPermission("CWGReload", "cwg.reload", 2)
+            createPermission("CWGShowAnotherPlayer", "cwg.admin", 2)
         }
 
         /**
