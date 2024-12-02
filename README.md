@@ -3,7 +3,7 @@
 An open-source mod for Minecraft Java Edition, written in Kotlin for Fabric.
 This is a sidemod for [Cobblemon](https://cobblemon.com/)
 
-- Pokémon Wiki : an interface that allows you to view Pokémon information (such as pokédex).
+- Pokémon Wiki : an interface that allows you to view Pokémon species information (such as pokédex).
 
 #### I strongly recommend that you only use the server side
 
@@ -29,7 +29,7 @@ The Cobblemon wiki gui allows you to view:
 - Drops
 
 #### Commands:
-##### Permission: <code>cobblemon.cobblemon-wiki-gui.user</code>
+##### Permission: <code>cobblemon.cwg.use</code>
 - /pwiki < pokemon >
 - (alias) /pokewiki < pokemon >
 - (alias) /pokemonwiki < pokemon >
@@ -37,7 +37,10 @@ The Cobblemon wiki gui allows you to view:
 - (alias) /cobblewiki < pokemon >
 - (alias) /cwiki < pokemon >
 
-##### Permission: <code>cobblemon.cobblemon-wiki-gui.reload</code>
+##### Permission: <code>cobblemon.cwg.admin</code>
+- (all aliases) /pwiki < pokemon > < player >
+
+##### Permission: <code>cobblemon.cwg.reload</code>
 - /cobblemonwiki reload
 
 ### Default Configuration File
