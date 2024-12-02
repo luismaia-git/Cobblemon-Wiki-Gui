@@ -3,7 +3,7 @@
 An open-source mod for Minecraft Java Edition, written in Kotlin for Fabric.
 This is a sidemod for [Cobblemon](https://cobblemon.com/)
 
-- Pokémon Wiki : an interface that allows you to view Pokémon information (such as pokédex).
+- Pokémon Wiki : an interface that allows you to view Pokémon species information (such as pokédex).
 
 #### I strongly recommend that you only use the server side
 
