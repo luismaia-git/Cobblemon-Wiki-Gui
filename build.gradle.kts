@@ -1,8 +1,8 @@
 plugins {
 	id("java")
-	id("fabric-loom") version("1.6-SNAPSHOT")
-	kotlin("jvm") version ("1.8.20")
-	kotlin("plugin.serialization") version "1.5.21"
+	id("fabric-loom") version("1.9-SNAPSHOT")
+	id("org.jetbrains.kotlin.jvm") version("2.1.0")
+	kotlin("plugin.serialization") version("1.5.21")
 }
 
 group = property("maven_group")!!
@@ -47,8 +47,8 @@ dependencies {
 	// Permission API
 	modImplementation("me.lucko:fabric-permissions-api:${property("permissions_api_version")}")
 
-	modImplementation("eu.pb4:sgui:1.2.2+1.20")
-	include("eu.pb4:sgui:1.2.2+1.20")
+	modImplementation("eu.pb4:sgui:1.6.1+1.21.1")
+	include("eu.pb4:sgui:1.6.1+1.21.1")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 	implementation(kotlin("stdlib"))
@@ -70,7 +70,7 @@ tasks {
 	}
 
 	compileKotlin {
-		kotlinOptions.jvmTarget = "17"
+		kotlinOptions.jvmTarget = "21"
 	}
 
 }

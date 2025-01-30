@@ -1,16 +1,7 @@
 package com.luismaia.helper
 
-import com.cobblemon.mod.common.Cobblemon
-import com.cobblemon.mod.common.CobblemonBlockEntities
-import com.cobblemon.mod.common.CobblemonEntities
 import com.cobblemon.mod.common.CobblemonItems
-import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
-import com.cobblemon.mod.common.api.tags.CobblemonEntityTypeTags
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import com.cobblemon.mod.common.item.PokemonItem
-import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.pokemon.Species
-import eu.pb4.sgui.api.GuiHelpers
 import eu.pb4.sgui.api.elements.GuiElement
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
@@ -61,8 +52,9 @@ object GuiHelper {
 
     fun createPokemonButton(species: Species): GuiElementBuilder {
         val itemStack = CobblemonItems.POKE_BALL.defaultStack
-        itemStack.orCreateNbt.putString("pokemon_species", species.name) // Add a custom NBT tag
-        val dexNumber = species.nationalPokedexNumber
-        return createEmptyButton(itemStack).setName(Text.literal("§b[§e#$dexNumber§b] §a" +species.name))
+
+        val displayName = Text.literal("§b[§e#${species.nationalPokedexNumber}§b] §a${species.name}")
+        return createEmptyButton(itemStack).setName(displayName)
     }
+
 }
