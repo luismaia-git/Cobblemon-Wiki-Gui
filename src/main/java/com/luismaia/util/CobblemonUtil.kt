@@ -27,12 +27,12 @@ import kotlin.math.roundToInt
 
 object CobblemonUtil {
 
-    private val darkAqua = Style.EMPTY.withColor(TextColor.parse("dark_aqua"))
-    private val darkPurple = Style.EMPTY.withColor(TextColor.parse("dark_purple"))
-    private val gold = Style.EMPTY.withColor(TextColor.parse("gold"))
-    private val red = Style.EMPTY.withColor(TextColor.parse("red"))
-    private val lightPurple = Style.EMPTY.withColor(TextColor.parse("light_purple"))
-    private val yellow = Style.EMPTY.withColor(TextColor.parse("yellow"))
+    private val darkAqua = Style.EMPTY.withColor(TextColor.fromRgb(0x00AAAA)).withItalic(false)
+    private val darkPurple = Style.EMPTY.withColor(TextColor.fromRgb(0xAA00AA)).withItalic(false)
+    private val gold = Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00)).withItalic(false)
+    private val red = Style.EMPTY.withColor(TextColor.fromRgb(0xFF5555)).withItalic(false)
+    private val lightPurple = Style.EMPTY.withColor(TextColor.fromRgb(0xFF55FF)).withItalic(false)
+    private val yellow = Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)).withItalic(false)
 
     private fun toWikiGui(payload: MutableText): MutableList<Text> {
         val lore: MutableList<Text> = ArrayList()
