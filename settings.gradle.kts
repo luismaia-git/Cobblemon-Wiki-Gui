@@ -12,7 +12,7 @@ pluginManagement {
 	includeBuild("gradle/build-logic")
 }
 
-rootProject.name = "cobblemon-wiki-gui"
+rootProject.name = "cobblemon_wiki_gui"
 
 listOf(
 	"common",

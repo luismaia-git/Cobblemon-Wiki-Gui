@@ -12,12 +12,16 @@ loom {
 }
 
 repositories {
-    maven(url = "${rootProject.projectDir}/deps")
     maven(url = "https://thedarkcolour.github.io/KotlinForForge/")
     maven(url = "https://api.modrinth.com/maven")
     maven(url = "https://maven.neoforged.net/releases")
+
     maven("https://maven.impactdev.net/repository/development/")
     mavenLocal()
+
+    flatDir {
+        dir("lib")
+    }
 }
 
 dependencies {
@@ -37,6 +41,9 @@ dependencies {
         isTransitive = false
     }
     testImplementation(project(":common", configuration = "namedElements"))
+
+    modImplementation("eu.pb4:sgui:1.9.1+1.21.1-neoforge")
+    include("eu.pb4:sgui:1.9.1+1.21.1-neoforge")
 
     modImplementation(libs.cobblemon.neoforge)
 

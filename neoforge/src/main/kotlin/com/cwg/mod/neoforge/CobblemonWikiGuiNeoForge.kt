@@ -5,6 +5,7 @@ import com.cwg.mod.CobblemonWikiGuiImplementation
 import com.cwg.mod.Environment
 import com.cwg.mod.ModAPI
 import com.cwg.mod.command.CobblemonWikiGuiCommands
+import com.cwg.mod.neoforge.client.CobblemonWikiGuiNeoForgeClient
 import com.cwg.mod.neoforge.net.CobblemonWikiGuiNeoForgeNetworkManager
 import com.cwg.mod.neoforge.permission.ForgePermissionValidator
 import com.cwg.mod.net.messages.client.lang.LangSyncPacket
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.packs.resources.PreparableReloadListener
+import net.neoforged.api.distmarker.Dist
 import net.neoforged.fml.ModList
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
@@ -60,9 +62,9 @@ class CobblemonWikiGuiNeoForge : CobblemonWikiGuiImplementation {
             addListener(::onReload)
         }
 
-//        if (FMLEnvironment.dist == Dist.CLIENT) {
-//            CobblemonWikiGuiNeoForgeClient.init()
-//        }
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            CobblemonWikiGuiNeoForgeClient.init()
+        }
     }
 
     fun initialize(event: FMLCommonSetupEvent) {
@@ -85,7 +87,6 @@ class CobblemonWikiGuiNeoForge : CobblemonWikiGuiImplementation {
     private fun sendLangConfigToPlayer(player: ServerPlayer) {
         val langMap = CobblemonWikiGui.langConfig.toMap()
         LangSyncPacket(langMap).sendToPlayer(player)
-        println("Enviando ${langMap.size} strings de lang para ${player.name.string} (NeoForge)")
     }
 
     fun onLogin(event: PlayerEvent.PlayerLoggedInEvent) {

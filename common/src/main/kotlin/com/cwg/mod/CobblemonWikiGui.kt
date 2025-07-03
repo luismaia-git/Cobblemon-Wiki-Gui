@@ -23,7 +23,7 @@ import kotlin.properties.Delegates
 
 object CobblemonWikiGui {
 
-    const val MOD_ID: String = "cobblemon-wiki-gui"
+    const val MOD_ID: String = "cobblemon_wiki_gui"
     const val MOD_NAME: String = "Cobblemon Wiki Gui"
     const val VERSION: String = "2.1.0"
     const val CONFIG_PATH = "config/$MOD_ID/main.json"

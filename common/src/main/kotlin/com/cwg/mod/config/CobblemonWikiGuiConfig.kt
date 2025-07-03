@@ -11,6 +11,6 @@ class CobblemonWikiGuiConfig {
         .create()
     }
 
-
+    var version: String = "1.0.0"
 }
 

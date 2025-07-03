@@ -13,18 +13,8 @@ architectury {
     fabric()
 }
 
-val generatedResources = file("src/generated/resources")
-
-sourceSets {
-    main {
-        resources {
-            srcDir(generatedResources)
-        }
-    }
-}
 
 repositories {
-    maven(url = "${rootProject.projectDir}/deps")
     mavenLocal()
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven(url = "https://api.modrinth.com/maven")
@@ -56,7 +46,6 @@ dependencies {
     include(libs.sgui)
 
     modImplementation(libs.cobblemon.fabric)
-
 
 }
 

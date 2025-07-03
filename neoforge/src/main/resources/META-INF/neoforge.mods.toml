@@ -1,10 +1,10 @@
 modLoader="kotlinforforge" #mandatory
 loaderVersion="[5.3,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
-license="MPL2.0"
+license="MIT"
 issueTrackerURL=""
 
 [[mods]] #mandatory
-modId="cobblemon-wiki-gui" #mandatory
+modId="cobblemon_wiki_gui" #mandatory
 version="${version}" #mandatory
 displayName="Cobblemon Wiki Gui" #mandatory
 displayURL=""
@@ -24,12 +24,12 @@ config = "mixins.cobblemon-wiki-gui-neoforge.json"
 [[mixins]]
 config = "mixins.cobblemon-wiki-gui-common.json"
 
-[[dependencies.cobblemon]]
+[[dependencies.cobblemon-wiki-gui]]
 modId="minecraft"
 mandatory=true
 versionRange="[${minecraft_version}]"
 
-[[dependencies.cobblemon]]
+[[dependencies.cobblemon-wiki-gui]]
 modId="neoforge" #mandatory
 mandatory=true #mandatory
 versionRange="[21,)" #mandatory

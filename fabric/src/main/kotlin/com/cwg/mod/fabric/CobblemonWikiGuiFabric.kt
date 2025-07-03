@@ -33,6 +33,7 @@ object CobblemonWikiGuiFabric : CobblemonWikiGuiImplementation {
         CobblemonWikiGui.initialize()
 
         networkManager.registerMessages()
+
         networkManager.registerServerHandlers()
         registerCommands()
 

@@ -41,7 +41,7 @@ sourceSets {
     main {
         blossom {
             kotlinSources {
-                property("modid", "cobblemon-wiki-gui")
+                property("modid", "cobblemon_wiki_gui")
                 property("version", project.version())
                 property("gitCommit", versioning.info.commit)
                 property("branch", versioning.info.branch)

@@ -144,21 +144,21 @@ object PokeWikiGui {
                 )
                 .build()
             ,
-            GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_13))
+            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LIGHT_BALL))
                 .setName(Component.literal(lang.tmMoves))
                 .setLore(
                     CobblemonUtil.getTmMoves(species)
                 )
                 .build()
             ,
-            GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_PIGSTEP))
+            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.FRIEND_BALL))
                 .setName(Component.literal(lang.tutorMoves))
                 .setLore(
                     CobblemonUtil.getTutorMoves(species)
                 )
                 .build()
             ,
-            GuiHelper.createEmptyButton(ItemStack(Items.MUSIC_DISC_5))
+            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.ULTRA_BALL))
                 .setName(Component.literal(lang.evolutionMoves))
                 .setLore(
                     CobblemonUtil.getEvolutionMoves(species)

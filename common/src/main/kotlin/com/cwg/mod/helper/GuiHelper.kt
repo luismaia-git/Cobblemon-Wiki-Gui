@@ -7,6 +7,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
 
@@ -48,7 +49,8 @@ object GuiHelper {
 
     fun createEmptyButton(stack: ItemStack): GuiElementBuilder {
         stack.remove(DataComponents.LORE)
-        return GuiElementBuilder(stack).setName(Component.empty())
+
+        return GuiElementBuilder(stack).setName(Component.empty()).hideDefaultTooltip()
     }
 
     fun createPokemonButton(species: Species): GuiElementBuilder {
@@ -60,3 +62,4 @@ object GuiHelper {
 
 
 }
+

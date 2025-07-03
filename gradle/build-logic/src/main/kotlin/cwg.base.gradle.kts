@@ -4,7 +4,6 @@ plugins {
     id("java")
     id("java-library")
 
-    id("org.cadixdev.licenser")
     id("dev.architectury.loom")
     id("architectury-plugin")
     kotlin("jvm")
@@ -25,9 +24,6 @@ repositories {
     maven("https://maven.parchmentmc.org")
 }
 
-license {
-    header(rootProject.file("HEADER"))
-}
 
 architectury {
     minecraft = project.property("mc_version").toString()
@@ -56,7 +52,5 @@ tasks {
         kotlinOptions.jvmTarget = "21"
     }
 
-    withType<Jar> {
-        from(rootProject.file("LICENSE"))
-    }
+
 }

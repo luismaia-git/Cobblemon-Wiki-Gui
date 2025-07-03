@@ -9,10 +9,9 @@ import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.pokemon.evolution.Evolution
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.spawning.CobblemonSpawnPools
+import com.cobblemon.mod.common.api.spawning.TimeRange
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
-import com.cobblemon.mod.common.api.tags.CobblemonItemTags
 import com.cobblemon.mod.common.api.text.aqua
-import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.api.text.gray
 import com.cobblemon.mod.common.api.text.plus
 import com.cobblemon.mod.common.api.text.text
@@ -38,18 +37,19 @@ import com.cobblemon.mod.common.pokemon.evolution.requirements.UseMoveRequiremen
 import com.cobblemon.mod.common.pokemon.evolution.variants.BlockClickEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.ItemInteractionEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.TradeEvolution
+import com.cobblemon.mod.common.registry.BiomeIdentifierCondition
+import com.cobblemon.mod.common.registry.BiomeTagCondition
 import com.cobblemon.mod.common.registry.ItemIdentifierCondition
 import com.cobblemon.mod.common.util.asTranslated
 import com.cwg.mod.CobblemonWikiGui
 import net.minecraft.ChatFormatting
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.block.Block
 import kotlin.math.roundToInt
 
@@ -107,11 +107,8 @@ object CobblemonUtil {
                 loreRequirements.add(translation)
             }
             is ItemInteractionEvolution -> {
-
                 val item: RegistryLikeCondition<Item> = evolution.requiredContext.item
-
                 if (item is ItemIdentifierCondition) requiredContextIdentifier = item.identifier
-
 
                 val itemName = "item.${requiredContextIdentifier?.toLanguageKey()}".asTranslated()
 
@@ -131,16 +128,21 @@ object CobblemonUtil {
 
         requirements.forEach { requirement ->
             when (requirement) {
-                is BiomeRequirement -> {
+                is BiomeRequirement -> { 
                     requirement.biomeCondition?.let { biome ->
-                        val biomeId = biome.toString()
-                        val text = lang.biomeCondition.format(biomeId.asTranslated()).asTranslated()
+                        var biomeCondition : ResourceLocation? = null
+                        if(biome is BiomeTagCondition) biomeCondition = biome.tag.location
+                        val biomeName = "${biomeCondition?.toLanguageKey()}".asTranslated()
+
+                        val text = lang.biomeCondition.format(biomeName.string).asTranslated()
                         loreRequirements.add(text)
                     }
 
                     requirement.biomeAnticondition?.let { biome ->
-                        val biomeId = biome.toString()
-                        val text = lang.biomeCondition.format(biomeId.asTranslated()).asTranslated()
+                        var biomeCondition : ResourceLocation? = null
+                        if(biome is BiomeTagCondition) biomeCondition = biome.tag.location
+                        val biomeName = "${biomeCondition?.toLanguageKey()}".asTranslated()
+                        val text = lang.biomeAntiCondition.format(biomeName.string).asTranslated()
                         loreRequirements.add(text)
                     }
                 }
@@ -155,7 +157,7 @@ object CobblemonUtil {
                     if (itemCondition is ItemIdentifierCondition) identifier = itemCondition.identifier
 
                     val itemName = "item.${identifier?.toLanguageKey()}".asTranslated()
-                    val text = lang.heldItem.format(itemName).asTranslated()
+                    val text = lang.heldItem.format(itemName.string).asTranslated()
                     loreRequirements.add(text)
                 }
                 is FriendshipRequirement -> {
@@ -165,7 +167,24 @@ object CobblemonUtil {
                 }
                 is TimeRangeRequirement -> {
                     val range = requirement.range
-                    val text = lang.timeRange.format(range).text()
+
+                    fun areTimeRangesEquivalent(tr1: TimeRange, tr2: TimeRange): Boolean {
+                        if (tr1.ranges.size != tr2.ranges.size) {
+                            return false
+                        }
+                        return tr1.ranges == tr2.ranges
+                    }
+
+                    var nameDay: String? = null
+
+                    for ((name, predefinedRange) in TimeRange.timeRanges) {
+                        if (areTimeRangesEquivalent(range, predefinedRange)) {
+                            nameDay = name
+                            break
+                        }
+                    }
+
+                    val text = lang.timeRange.format(nameDay).text()
                     loreRequirements.add(text)
                 }
                 is MoveSetRequirement -> {
@@ -225,13 +244,13 @@ object CobblemonUtil {
 
                     requirement.structureCondition.let { it ->
                         val structure = it.toString()
-                        val text = lang.structureCondition.format(structure.asTranslated()).text()
+                        val text = lang.structureCondition.format(structure.asTranslated()).asTranslated()
                         loreRequirements.add(text)
                     }
 
                     requirement.structureAnticondition.let { it ->
                         val structure = it.toString()
-                        val text = lang.structureAntiCondition.format(structure.asTranslated()).text()
+                        val text = lang.structureAntiCondition.format(structure.asTranslated()).asTranslated()
                         loreRequirements.add(text)
                     }
 
@@ -319,19 +338,6 @@ object CobblemonUtil {
     }
 
     fun getSpawnTime(species: Species): MutableList<Component> {
-        val dayCycleMap = mapOf(
-            "Any time" to listOf(0..23999),
-            "Day" to listOf(23460 downTo 12541),
-            "Night" to listOf(12542..23459),
-            "Noon" to listOf(5000..6999),
-            "Midnight" to listOf(17000..18999),
-            "Dawn" to listOf(22300 downTo 166),
-            "Dusk" to listOf(11834..13701),
-            "Twilight" to listOf(11834..13701, 22300 downTo 166),
-            "Morning" to listOf(0..4999),
-            "Afternoon" to listOf(7000..12039),
-            "Any time" to listOf(0..23999),
-        )
 
         val spawnDetailsList = getSpawnDetails(species)
 
@@ -359,6 +365,27 @@ object CobblemonUtil {
     }
 
     private fun getSpawnBiomes(species: Species, world: Level): MutableList<Component> {
+        val lore: MutableList<Component> = ArrayList()
+        var component: MutableComponent = "".text()
+        val spawnDetail = getSpawnDetails(species)
+        val hasOverworldCondition = spawnDetail.any { s ->
+            s.conditions.any { condition ->
+                // Check if the condition has biomes defined
+                condition.biomes?.any { biomeCondition ->
+                    // Check if any of the biome conditions is the "cobblemon:is_overworld" tag
+                    when (biomeCondition) {
+                        is BiomeTagCondition -> biomeCondition.tag.location.toString() == "cobblemon:is_overworld"
+                        else -> false
+                    }
+                } ?: false
+            }
+        }
+
+        if (hasOverworldCondition) {
+            lore.add("Overworld".text())
+            return lore
+        }
+
         val biomes = BiomeUtils.getAllBiomes(world)
         val validBiomes = biomes.filter { biome ->
             getSpawnDetails(species).any { s ->
@@ -367,8 +394,7 @@ object CobblemonUtil {
                 }
             }
         }
-        val lore: MutableList<Component> = ArrayList()
-        var component: MutableComponent = "".text()
+
         var i = 0
 
         validBiomes.forEach { biome ->

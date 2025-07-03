@@ -1,6 +1,9 @@
 package com.cwg.mod.util
 
 import com.cobblemon.mod.common.api.spawning.condition.SpawningCondition
+import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
+import com.cobblemon.mod.common.pokemon.FormData
+import com.cobblemon.mod.common.registry.BiomeTagCondition
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.Level
