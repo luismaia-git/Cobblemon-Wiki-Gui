@@ -1,6 +1,5 @@
 package com.cwg.mod.fabric;
 
-import com.cobblemon.mod.common.net.messages.client.settings.ServerSettingsPacket
 import com.cwg.mod.CobblemonWikiGui;
 import com.cwg.mod.CobblemonWikiGuiImplementation
 import com.cwg.mod.Environment

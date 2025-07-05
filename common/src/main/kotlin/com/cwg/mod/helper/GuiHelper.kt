@@ -7,7 +7,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.world.item.Item
+import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
 
@@ -49,7 +49,7 @@ object GuiHelper {
 
     fun createEmptyButton(stack: ItemStack): GuiElementBuilder {
         stack.remove(DataComponents.LORE)
-
+        stack.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE)
         return GuiElementBuilder(stack).setName(Component.empty()).hideDefaultTooltip()
     }
 
@@ -58,7 +58,6 @@ object GuiHelper {
         val displayName = Component.literal("§b[§e#${species.nationalPokedexNumber}§b] §a${species.name}")
         return GuiElementBuilder(pokemonItem).setName(displayName)
     }
-
 
 
 }

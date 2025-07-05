@@ -1,11 +1,11 @@
 
 # Cobblemon Wiki Gui
-An open-source mod for Minecraft Java Edition, written in Kotlin for Fabric.
+An open-source mod for Minecraft Java Edition, written in Kotlin for Fabric and NeoForge.
 This is a sidemod for [Cobblemon](https://cobblemon.com/)
 
 - Pokémon Wiki : an interface that allows you to view Pokémon species information (such as pokédex).
 
-#### I strongly recommend that you only use the server side
+#### I strongly recommend that you only use the server side or singleplayer
 
 ### Features
 
@@ -17,6 +17,7 @@ The Cobblemon wiki gui allows you to view:
 - Spawn at Biomes
 - Spawntime
 - Evolutions
+- Evolution Requirements
 - Moves by level
 - TM Moves
 - Tutor Moves
@@ -28,8 +29,15 @@ The Cobblemon wiki gui allows you to view:
 - Dynamax
 - Drops
 
+
+## Screenshots
+![ImageMain](https://cdn.modrinth.com/data/cached_images/e9ef1affec499acf712b44850f908d1be71a5fb4.png)
+![Biomes](https://cdn.modrinth.com/data/cached_images/1a4da83e11d70fe30073a8454c00ac5a81369d60.png)
+![Effectiviness](https://cdn.modrinth.com/data/cached_images/bda479d09584c4e95ed619c921a9941d1c53a259.png)
+
+
 #### Commands:
-##### Permission: <code>cobblemon.cwg.use</code>
+##### Permission: <code>cobblemon_wiki_gui.command.pwiki</code>
 - /pwiki < pokemon >
 - (alias) /pokewiki < pokemon >
 - (alias) /pokemonwiki < pokemon >
@@ -37,23 +45,54 @@ The Cobblemon wiki gui allows you to view:
 - (alias) /cobblewiki < pokemon >
 - (alias) /cwiki < pokemon >
 
-##### Permission: <code>cobblemon.cwg.admin</code>
-- (all aliases) /pwiki < pokemon > < player >
+##### Permission: <code>cobblemon_wiki_gui.command.pwikianother</code>
+- /pwikiother < pokemon > < player >
+- (alias) /pokewikiother < pokemon > < player >
+- (alias) /pokemonwikiother < pokemon > < player >
+- (alias) /cobblemonwikiother < pokemon > < player >
+- (alias) /cobblewikiother < pokemon > < player >
+- (alias) /cwikiother < pokemon > < player >
 
-##### Permission: <code>cobblemon.cwg.reload</code>
-- /cobblemonwiki reload
+##### Permission: <code>cobblemon_wiki_gui.command.cwgreload</code>
+- /cwg reload
 
 ### Default Configuration File
-The config.json file, located under config/cobblemon-wiki-gui, contains the following default settings:
+The lang.json file, located under config/cobblemon_wiki_gui, contains the following default settings:
 ```json
 {
+  "useItem": "Use a %s",
+  "tradeAny": "Complete any trade or use a %s",
+  "tradeSpecific": "Trade for an %s or use a %s",
+  "level": "Level: %s",
+  "friendship": "Friendship: %s",
+  "heldItem": "Pokémon held item: %s",
+  "anyRequirement": "Need any of these requirements:",
+  "attackDefenceRatioAttackHigher": "Need more attack than defence",
+  "attackDefenceRatioDefenceHigher": "Need more defence than attack",
+  "attackDefenceRatioEqual": "Need equal value of attack and defence",
+  "blocksTraveled": "Need %s blocks traveled",
+  "defeat": "Need %s defeats",
+  "moveSet": "Need %s move",
+  "moveType": "Need any type %s move",
+  "recoil": "Need %s recoil",
+  "statEqual": "Stats %s and %s need to be equal",
+  "statCompare": "Stat %s should be higher than %s",
+  "timeRange": "Time of day: %s",
+  "useMove": "Need to use %s movement %s times",
+  "biomeCondition": "Need biome tag: %s",
+  "biomeAntiCondition": "Blacklisted biome tag: %s",
+  "structureCondition": "Need structure: %s",
+  "structureAntiCondition": "Blacklisted structure: %s",
+  "noEvolutionFound": "No evolution found for %s",
+  "rightClick": "Right click a %s",
+  "goBackClick": "Click to go back",
+  "seeEvolutions": "Click to see evolutions",
   "basestats": "Base Stats",
   "type": "Type",
   "effectiveness": "Effectiveness",
   "catchrate": "CatchRate",
   "spawnbiome": "Biome Spawns",
   "spawntime": "Time Spawns",
-  "spawnlocations": "Time Spawns",
   "evolutions": "Evolutions",
   "movesbylevel": "Moves by level",
   "tmMoves": "TM Moves",
@@ -62,31 +101,26 @@ The config.json file, located under config/cobblemon-wiki-gui, contains the foll
   "eggMoves": "Egg Moves",
   "formChangeMoves": "Form Changes Moves",
   "abilities": "Abilities",
-  "baseFriendship": "Base Friendship",
   "drops": "Drops",
   "eggGroups": "Egg Groups",
   "forms": "Forms",
   "dynamax": "Dynamax",
-  "baseExpYield": "Base Exp Yield",
-  "weakness": "Is weak against",
+  "baseFriendship": "Friendship",
+  "weakness": "Is weak against:",
   "resistant": "Resistant against:",
   "immune": "Immune against:",
   "pokeInfo": "Click to get more info",
-  "pokewikiErrorNotplayer": "This command must be ran by a player.",
-  "chatTitle": "[Cobblemon Wiki Gui] ",
-  "isEnablePermissionNodes": true
+  "noDrops": "No Drops"
 }
 ```
 
 ## Installation
-This mod can be [Fabric](https://fabricmc.net/)
+- This mod can be [Fabric](https://fabricmc.net/)
+- This mod can be [NeoForge](https://neoforged.net/)
 
-- Minecraft Versions: 1.20.1
+- Minecraft Versions: 1.21.1
 - [Cobblemon](https://modrinth.com/mod/cobblemon)
 
-## Screenshots
-![Image](https://cdn.modrinth.com/data/1KP4CLlU/images/20c2fac9896bc12599ea01e27036600a85b69103.png)
-![image2](https://cdn.modrinth.com/data/1KP4CLlU/images/8aae25730d938ed9dce885f158cf0e52275150c8.png)
 
 ## Frequently Asked Questions (FAQ) for Cobblemon and CobblemonWikiGui
 
@@ -97,12 +131,12 @@ A: The CobblemonWikiGui adds an interface that allows you to view Pokémon infor
 #### Q: Is it possible to open the Pokemon Wiki gui by command?
 
 A: Yes, just type /pokewiki <pokemon>
-A: You can also open the gui for a specific player with : /pokewiki <pokemon> <player>
+A: You can also open the gui for a specific player with : /pokewikiother <pokemon> <player>
 
 #### Q: Is it possible to customize the configuration files?
 
 A: Yes, as long as you keep the standard Json formatting and don't change the file keys.
-A: In game, you can type /cobblemonwiki reload and the modified config.json file will be loaded
+A: In game, you can type /cwg reload and the modified lang.json file will be loaded
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)

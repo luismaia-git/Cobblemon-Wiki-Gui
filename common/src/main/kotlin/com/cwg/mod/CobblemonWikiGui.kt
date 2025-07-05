@@ -25,7 +25,7 @@ object CobblemonWikiGui {
 
     const val MOD_ID: String = "cobblemon_wiki_gui"
     const val MOD_NAME: String = "Cobblemon Wiki Gui"
-    const val VERSION: String = "2.1.0"
+    const val VERSION: String = "2.0.1"
     const val CONFIG_PATH = "config/$MOD_ID/main.json"
     const val CONFIG_LANG_PATH = "config/$MOD_ID/lang.json"
 
