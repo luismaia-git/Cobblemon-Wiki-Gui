@@ -1,0 +1,42 @@
+modLoader="kotlinforforge" #mandatory
+loaderVersion="[5.3,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+license="MIT"
+issueTrackerURL=""
+
+[[mods]] #mandatory
+modId="cobblemon_wiki_gui" #mandatory
+version="${version}" #mandatory
+displayName="Cobblemon Wiki Gui" #mandatory
+displayURL=""
+#logoFile="examplemod.png" #optional
+credits="Thanks to Mojang, and the many community contributors"
+authors="Luís Maia"
+description='''
+ Mod that adds information interface for Cobblemon!
+'''
+
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+# A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+[[mixins]]
+config = "mixins.cobblemon-wiki-gui-neoforge.json"
+[[mixins]]
+config = "mixins.cobblemon-wiki-gui-common.json"
+
+[[dependencies.cobblemon-wiki-gui]]
+modId="minecraft"
+mandatory=true
+versionRange="[${minecraft_version}]"
+
+[[dependencies.cobblemon-wiki-gui]]
+modId="neoforge" #mandatory
+mandatory=true #mandatory
+versionRange="[21,)" #mandatory
+
+# this is to lock cobblemon into whatever java version that minecraft uses
+# we do this as often graal crashes when running on newer versions
+# the below spec allows anything from java_version.0.0 to java_version.99999.0 which should cover all releases
+# doing it like this allows us to not hardcode an upperbound, but keeping it dynamic
+[features.cobblemon]
+javaVersion="[${java_version},${java_version}.999999)"

@@ -1,7 +1,7 @@
 # gradle
-
-.gradle/
-build/
+/.architectury-transformer/
+.gradle
+build
 out/
 classes/
 
@@ -28,9 +28,11 @@ bin/
 
 *.DS_Store
 
-# fabric
+# other
 
-run/
+run
+runServer
+runClient
 
 # java
 
@@ -38,3 +40,5 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+.kotlin

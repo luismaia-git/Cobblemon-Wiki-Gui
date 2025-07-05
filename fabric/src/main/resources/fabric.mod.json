@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "cobblemon_wiki_gui",
+	"version": "${version}",
+	"name": "Cobblemon Wiki Gui",
+	"description": "Mod that adds information interface for Cobblemon!",
+	"authors": [
+		"LuísMaia"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/luismaia-git"
+	},
+	"license": "MIT",
+	"icon": "assets/cobblemon_wiki_gui/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+          "com.cwg.mod.fabric.FabricBootstrap"
+		],
+		"client": [
+			"com.cwg.mod.fabric.client.CobblemonWikiGuiFabricClient"
+		],
+		"fabric-datagen": [
+			"com.cwg.mod.CobblemonWikiGuiDataGenerator"
+		]
+	},
+	"mixins": [
+		"mixins.cobblemon-wiki-gui-common.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"cobblemon":">=1.6.1"
+	}
+}

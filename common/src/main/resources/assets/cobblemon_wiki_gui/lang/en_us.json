@@ -1,0 +1,32 @@
+{
+  "cobblemon_wiki_gui.wiki.basestats" : "Base Stats",
+  "cobblemon_wiki_gui.wiki.type" : "Type",
+  "cobblemon_wiki_gui.wiki.effectiveness": "Effectiveness",
+  "cobblemon_wiki_gui.wiki.catchrate" : "CatchRate",
+  "cobblemon_wiki_gui.wiki.spawnbiome" : "Biome Spawns",
+  "cobblemon_wiki_gui.wiki.spawntime" : "Time Spawns",
+  "cobblemon_wiki_gui.wiki.spawnlocations" : "Time Spawns",
+  "cobblemon_wiki_gui.wiki.evolutions" : "Evolutions",
+  "cobblemon_wiki_gui.wiki.movesbylevel": "Moves by level",
+  "cobblemon_wiki_gui.wiki.tm_moves": "TM Moves",
+  "cobblemon_wiki_gui.wiki.tutor_moves": "Tutor Moves",
+  "cobblemon_wiki_gui.wiki.evolution_moves": "Evolution Moves",
+  "cobblemon_wiki_gui.wiki.egg_moves": "Egg Moves",
+  "cobblemon_wiki_gui.wiki.form_change_moves": "Form Changes Moves",
+  "cobblemon_wiki_gui.wiki.abilities": "Abilities",
+  "cobblemon_wiki_gui.wiki.base_friendship": "Base Friendship",
+  "cobblemon_wiki_gui.wiki.drops": "Drops",
+  "cobblemon_wiki_gui.wiki.egg_groups": "Egg Groups",
+  "cobblemon_wiki_gui.wiki.forms": "Forms",
+  "cobblemon_wiki_gui.wiki.dynamax": "Dynamax",
+  "cobblemon_wiki_gui.wiki.base_exp_yield": "Base Exp Yield",
+
+  "cobblemon_wiki_gui.wiki.weakness": "Is weak against",
+  "cobblemon_wiki_gui.wiki.resistant": "Resistant against:",
+  "cobblemon_wiki_gui.wiki.immune": "Immune against:",
+  "cobblemon_wiki_gui.wiki.poke.info": "Click to get more info",
+  "cobblemon_wiki_gui.command.pokewiki.error.notplayer" : "This command must be ran by a player."
+
+
+
+}
