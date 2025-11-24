@@ -4,7 +4,7 @@ import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.api.text.yellow
-import com.cobblemon.mod.common.pokemon.Species
+import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.helper.GuiHelper
@@ -19,77 +19,111 @@ import net.minecraft.world.item.Items
 
 object EvolutionsGui {
     val lang = CobblemonWikiGui.langConfig
-    fun open(species: Species, player: ServerPlayer): SimpleGui {
 
-        val content: ArrayList<GuiElement?> = arrayListOf()
+    private val CONTENT_SPACE = arrayOf(
+        10, 11, 12, 13, 14, 15, 16,
+        19, 20, 21, 22, 23, 24, 25,
+    )
 
-        val CONTENT_SPACE = arrayOf(
-            0,
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-        )
+    private const val ITEMS_PER_PAGE = 14
 
+    fun open(species: FormData, player: ServerPlayer, page: Int = 0): SimpleGui {
         val gui = SimpleGui(MenuType.GENERIC_9x4, player, false)
-        val redPane = GuiHelper.RED_PANE;
+        val redPane = GuiHelper.RED_PANE
+
         gui.title = Component.literal("Cobblemon Wiki - Evolutions").red()
 
-        val evolutions = species.standardForm.evolutions
-        if (evolutions.isEmpty()) {
-            content.add(
-                GuiHelper
-                    .createEmptyButton(Items.PAPER.defaultInstance)
-                    .setName(lang.noEvolutionFound.format(species.name).text().yellow())
-                    .setLore(listOf(lang.goBackClick.text()))
-                    .setCallback { _, _, _, gui ->
-                        run {
-                            gui.close()
-                            PokeWikiGui.open(species, gui.player)
-                        }
-                    }
-                    .build())
-        } else {
-            content.add(
-                GuiHelper
-                    .createEmptyButton(Items.BARRIER.defaultInstance)
-                    .setName(lang.goBackClick.text().yellow())
-                    .setCallback { _, _, _, gui ->
-                        run {
-                            gui.close()
-                            PokeWikiGui.open(species, gui.player)
-                        }
-                    }
-                    .build())
+        val evolutions = species.evolutions
+        val evolutionButtons: MutableList<GuiElement> = mutableListOf()
 
-            evolutions.forEach { it ->
-                val pokemonSpecies = it.result.species?.let {
-                    return@let try {
+        if (evolutions.isEmpty()) {
+            val noEvolutionButton = GuiHelper
+                .createEmptyButton(Items.PAPER.defaultInstance)
+                .setName(lang.noEvolutionFound.format(species.name).text().yellow())
+                .setLore(listOf(lang.goBackClick.text()))
+                .setCallback { _, _, _, gui ->
+                    gui.close()
+                    PokeWikiGui.open(species, gui.player)
+                }
+                .build()
+            gui.setSlot(13, noEvolutionButton)
+        } else {
+            // Criar botões de todas as evoluções
+            evolutions.forEach { evolution ->
+                val pokemonSpecies = evolution.result.species?.let {
+                    try {
                         PokemonSpecies.getByIdentifier(it.asIdentifierDefaultingNamespace())
-                    } catch (e: ResourceLocationException) {
+                    } catch (_: ResourceLocationException) {
                         null
                     }
                 }
 
-                val loreRequirements = CobblemonUtil.getRequirementsToWikiGui(it)
-
                 if (pokemonSpecies != null) {
-                    val button = GuiHelper.createPokemonButton(pokemonSpecies)
+                    val loreRequirements = CobblemonUtil.getRequirementsToWikiGui(evolution)
+                    val button = GuiHelper.createPokemonButton(pokemonSpecies.standardForm)
                         .setLore(loreRequirements)
                         .setCallback { _, _, _, gui ->
-                            run {
-                                gui.close()
-                                PokeWikiGui.open(pokemonSpecies, gui.player)
-                            }
+                            gui.close()
+                            PokeWikiGui.open(pokemonSpecies.standardForm, gui.player)
                         }
                         .build()
-                    content.add(button)
+                    evolutionButtons.add(button)
                 }
             }
 
+
+            val totalPages = (evolutionButtons.size + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
+            val currentPage = page.coerceIn(0, maxOf(0, totalPages - 1))
+            val startIndex = currentPage * ITEMS_PER_PAGE
+            val endIndex = minOf(startIndex + ITEMS_PER_PAGE, evolutionButtons.size)
+
+            for (i in startIndex until endIndex) {
+                val slotIndex = CONTENT_SPACE[i - startIndex]
+                gui.setSlot(slotIndex, evolutionButtons[i])
+            }
+
+            if (currentPage > 0) {
+                val prevButton = GuiHelper
+                    .createEmptyButton(Items.ARROW.defaultInstance)
+                    .setName(Component.literal("←").yellow())
+                    .setCallback { _, _, _, gui ->
+                        gui.close()
+                        open(species, gui.player, currentPage - 1)
+                    }
+                    .build()
+                gui.setSlot(18, prevButton)
+            }
+
+            if (currentPage < totalPages - 1) {
+                val nextButton = GuiHelper
+                    .createEmptyButton(Items.ARROW.defaultInstance)
+                    .setName(Component.literal("→").yellow())
+                    .setCallback { _, _, _, gui ->
+                        gui.close()
+                        open(species, gui.player, currentPage + 1)
+                    }
+                    .build()
+                gui.setSlot(26, nextButton)
+            }
+
+            if (totalPages > 1) {
+                val pageIndicator = GuiHelper
+                    .createEmptyButton(Items.BOOK.defaultInstance)
+                    .setName(Component.literal("Current page ${currentPage + 1}/${totalPages}").yellow())
+                    .build()
+                gui.setSlot(22, pageIndicator)
+            }
         }
 
-        for (j in content.indices) {
-            gui.setSlot(CONTENT_SPACE[j], content[j])
-        }
+        val backButton = GuiHelper
+            .createEmptyButton(Items.BARRIER.defaultInstance)
+            .setName(lang.goBackClick.text().yellow())
+            .setCallback { _, _, _, gui ->
+                gui.close()
+                PokeWikiGui.open(species, gui.player)
+            }
+            .build()
+        gui.setSlot(0, backButton)
 
         for (i in 0 until gui.size) {
             if (gui.getSlot(i) == null) {
@@ -99,7 +133,5 @@ object EvolutionsGui {
 
         gui.open()
         return gui
-
     }
-
 }

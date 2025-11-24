@@ -1,7 +1,7 @@
 package com.cwg.mod.helper
 
 import com.cobblemon.mod.common.item.PokemonItem
-import com.cobblemon.mod.common.pokemon.Species
+import com.cobblemon.mod.common.pokemon.FormData
 import eu.pb4.sgui.api.elements.GuiElement
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
@@ -53,7 +53,8 @@ object GuiHelper {
         return GuiElementBuilder(stack).setName(Component.empty()).hideDefaultTooltip()
     }
 
-    fun createPokemonButton(species: Species): GuiElementBuilder {
+    fun createPokemonButton(formData: FormData): GuiElementBuilder {
+        val species = formData.species
         val pokemonItem = PokemonItem.from(species)
         val displayName = Component.literal("§b[§e#${species.nationalPokedexNumber}§b] §a${species.name}")
         return GuiElementBuilder(pokemonItem).setName(displayName)

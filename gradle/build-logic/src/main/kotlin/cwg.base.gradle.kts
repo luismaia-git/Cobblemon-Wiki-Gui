@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -48,8 +49,10 @@ tasks {
         options.compilerArgs.add("-Xlint:-processing,-classfile,-serial")
     }
 
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
+    withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
 
 

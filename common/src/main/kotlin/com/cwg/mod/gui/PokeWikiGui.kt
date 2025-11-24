@@ -4,7 +4,7 @@ import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies.getByPokedexNumber
 import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.api.text.text
-import com.cobblemon.mod.common.pokemon.Species
+import com.cobblemon.mod.common.pokemon.FormData
 import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.helper.GuiHelper
 import com.cwg.mod.util.CobblemonUtil
@@ -20,9 +20,9 @@ import net.minecraft.world.item.Items
 object PokeWikiGui {
     val lang = CobblemonWikiGui.langConfig
     private val redPane: GuiElement = GuiHelper.RED_PANE
-    fun open(species: Species, playerEntity: ServerPlayer): SimpleGui {
+    fun open(formData: FormData, playerEntity: ServerPlayer): SimpleGui {
 
-        val content = contentMain(species, playerEntity)
+        val content = contentMain(formData, playerEntity)
 
         if (content.size > MAX_CONTENT) {
             throw RuntimeException("The content provided exceeds $MAX_CONTENT elements or is invalid.")
@@ -34,9 +34,9 @@ object PokeWikiGui {
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL,gui, 0, 0, 8, redPane)
         GuiHelper.setLine(GuiHelper.LineType.VERTICAL, gui, 0, 1, 3, redPane)
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL, gui, 4, 0, 8, redPane)
-        gui.setSlot(48, createRelativeButton(species, -1).build())
-        gui.setSlot(49, GuiHelper.createPokemonButton(species).build())
-        gui.setSlot(50, createRelativeButton(species, +1).build())
+        gui.setSlot(48, createRelativeButton(formData, -1).build())
+        gui.setSlot(49, GuiHelper.createPokemonButton(formData).build())
+        gui.setSlot(50, createRelativeButton(formData, +1).build())
         GuiHelper.setLine(GuiHelper.LineType.VERTICAL, gui, 8, 1, 3, redPane)
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL, gui, 5, 0, 2, redPane)
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL, gui, 5, 6, 8, redPane)
@@ -68,22 +68,23 @@ object PokeWikiGui {
 
     private val MAX_CONTENT: Int = CONTENT_SPACE.size
 
-    private fun createRelativeButton(species: Species, step: Int): GuiElementBuilder {
-        val relative = getByPokedexNumber(species.nationalPokedexNumber + step)
-        if(relative != null){
-            return GuiHelper.createPokemonButton(relative)
+    private fun createRelativeButton(formData: FormData, step: Int): GuiElementBuilder {
+        val relative = getByPokedexNumber(formData.species.nationalPokedexNumber + step)
+        val relativeForm = relative?.getFormByName(formData.name)
+        if(relative != null && relativeForm != null){
+            return GuiHelper.createPokemonButton(relativeForm)
                 .setLore(listOf<Component>(lang.pokeInfo.text()))
                 .setCallback { _, _, _, gui ->
                     run {
                         gui.close()
-                        open(relative, gui.player)
+                        open(relativeForm, gui.player)
                     }
                 }
         }
         return GuiHelper.createEmptyButton(redPane.itemStack)
     }
 
-    private fun contentMain(species: Species, serverPlayerEntity: ServerPlayer): Array<GuiElement?> {
+    private fun contentMain(species: FormData, serverPlayerEntity: ServerPlayer): Array<GuiElement?> {
         val content: Array<GuiElement?> = arrayOf(
             GuiHelper
                 .createEmptyButton(ItemStack(CobblemonItems.LIGHT_BALL))

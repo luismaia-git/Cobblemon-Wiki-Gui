@@ -10,6 +10,7 @@ import com.cobblemon.mod.common.api.pokemon.evolution.Evolution
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.spawning.CobblemonSpawnPools
 import com.cobblemon.mod.common.api.spawning.TimeRange
+import com.cobblemon.mod.common.api.spawning.condition.MoonPhase
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.text.aqua
 import com.cobblemon.mod.common.api.text.gray
@@ -17,51 +18,54 @@ import com.cobblemon.mod.common.api.text.plus
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.api.text.yellow
 import com.cobblemon.mod.common.api.types.ElementalTypes
-import com.cobblemon.mod.common.pokemon.Species
-import com.cobblemon.mod.common.pokemon.evolution.requirements.AnyRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.AttackDefenceRatioRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.BiomeRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.BlocksTraveledRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.DefeatRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.FriendshipRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.HeldItemRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.MoveSetRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.MoveTypeRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.RecoilRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.StatCompareRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.StatEqualRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.StructureRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.TimeRangeRequirement
-import com.cobblemon.mod.common.pokemon.evolution.requirements.UseMoveRequirement
+import com.cobblemon.mod.common.pokemon.FormData
+import com.cobblemon.mod.common.pokemon.requirements.AnyRequirement
+import com.cobblemon.mod.common.pokemon.requirements.AttackDefenceRatioRequirement
+import com.cobblemon.mod.common.pokemon.requirements.BiomeRequirement
+import com.cobblemon.mod.common.pokemon.requirements.BlocksTraveledRequirement
+import com.cobblemon.mod.common.pokemon.requirements.DefeatRequirement
+import com.cobblemon.mod.common.pokemon.requirements.FriendshipRequirement
+import com.cobblemon.mod.common.pokemon.requirements.HeldItemRequirement
+import com.cobblemon.mod.common.pokemon.requirements.LevelRequirement
+import com.cobblemon.mod.common.pokemon.requirements.MoonPhaseRequirement
+import com.cobblemon.mod.common.pokemon.requirements.MoveSetRequirement
+import com.cobblemon.mod.common.pokemon.requirements.MoveTypeRequirement
+import com.cobblemon.mod.common.pokemon.requirements.RecoilRequirement
+import com.cobblemon.mod.common.pokemon.requirements.StatCompareRequirement
+import com.cobblemon.mod.common.pokemon.requirements.StatEqualRequirement
+import com.cobblemon.mod.common.pokemon.requirements.StructureRequirement
+import com.cobblemon.mod.common.pokemon.requirements.TimeRangeRequirement
+import com.cobblemon.mod.common.pokemon.requirements.UseMoveRequirement
 import com.cobblemon.mod.common.pokemon.evolution.variants.BlockClickEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.ItemInteractionEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.TradeEvolution
-import com.cobblemon.mod.common.registry.BiomeIdentifierCondition
 import com.cobblemon.mod.common.registry.BiomeTagCondition
 import com.cobblemon.mod.common.registry.ItemIdentifierCondition
 import com.cobblemon.mod.common.util.asTranslated
 import com.cwg.mod.CobblemonWikiGui
 import net.minecraft.ChatFormatting
+import net.minecraft.core.HolderSet
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.TextColor
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.block.Block
+import java.util.Optional
 import kotlin.math.roundToInt
 
 
 object CobblemonUtil {
 
-    private val darkAqua = Style.EMPTY.withColor(0x00AAAA)
-    private val darkPurple = Style.EMPTY.withColor(0xAA00AA)
-    private val gold = Style.EMPTY.withColor(0xFFAA00)
-    private val red = Style.EMPTY.withColor(0xFF5555)
-    private val lightPurple = Style.EMPTY.withColor(0xFF55FF)
-    private val yellow = Style.EMPTY.withColor(0xFFFF55)
+    private val darkAqua = Style.EMPTY.withColor(TextColor.fromRgb(0x00AAAA)).withItalic(false)
+    private val darkPurple = Style.EMPTY.withColor(TextColor.fromRgb(0xAA00AA)).withItalic(false)
+    private val gold = Style.EMPTY.withColor(TextColor.fromRgb(0xFFAA00)).withItalic(false)
+    private val red = Style.EMPTY.withColor(TextColor.fromRgb(0xFF5555)).withItalic(false)
+    private val lightPurple = Style.EMPTY.withColor(TextColor.fromRgb(0xFF55FF)).withItalic(false)
+    private val yellow = Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)).withItalic(false)
     private val lang = CobblemonWikiGui.langConfig
 
     private fun toWikiGui(payload: MutableComponent): MutableList<Component> {
@@ -74,7 +78,7 @@ object CobblemonUtil {
         return mutableCollection
     }
 
-   private fun getType(pokemon: Species): MutableComponent {
+   private fun getType(pokemon: FormData): MutableComponent {
         return pokemon.types.map { it.displayName.copy() }.reduce { acc, next -> acc.plus("/").plus(next) }
     }
 
@@ -107,14 +111,12 @@ object CobblemonUtil {
                 loreRequirements.add(translation)
             }
             is ItemInteractionEvolution -> {
-                val item: RegistryLikeCondition<Item> = evolution.requiredContext.item
-                if (item is ItemIdentifierCondition) requiredContextIdentifier = item.identifier
-
-                val itemName = "item.${requiredContextIdentifier?.toLanguageKey()}".asTranslated()
-
-                val text = lang.useItem.format(itemName.string).asTranslated()
-
-                loreRequirements.add(text)
+               // todo this
+//                val itemName = "item.${requiredContextIdentifier?.toLanguageKey()}".asTranslated()
+//
+//                val text = lang.useItem.format(itemName.string).asTranslated()
+//
+//                loreRequirements.add(text)
             }
 
             is BlockClickEvolution -> {
@@ -151,14 +153,14 @@ object CobblemonUtil {
                     val text = lang.level.format(level).text()
                     loreRequirements.add(text)
                 }
-                is HeldItemRequirement -> {
-                    val itemCondition = requirement.itemCondition.item
-                    var identifier: ResourceLocation? = null;
-                    if (itemCondition is ItemIdentifierCondition) identifier = itemCondition.identifier
-
-                    val itemName = "item.${identifier?.toLanguageKey()}".asTranslated()
-                    val text = lang.heldItem.format(itemName.string).asTranslated()
-                    loreRequirements.add(text)
+                is HeldItemRequirement -> { // todo this
+//                    val itemCondition = requirement.itemCondition.
+//                    var identifier: ResourceLocation? = null;
+//                    if (itemCondition is ItemIdentifierCondition) identifier = itemCondition.identifier
+//
+//                    val itemName = "item.${identifier?.toLanguageKey()}".asTranslated()
+//                    val text = lang.heldItem.format(itemName.string).asTranslated()
+//                    loreRequirements.add(text)
                 }
                 is FriendshipRequirement -> {
                     val friendshipAmount = requirement.amount
@@ -243,8 +245,10 @@ object CobblemonUtil {
                 is StructureRequirement -> {
 
                     requirement.structureCondition.let { it ->
-                        val structure = it.toString()
-                        val text = lang.structureCondition.format(structure.asTranslated()).asTranslated()
+
+                        val structure = it?.toString()
+
+                        val text = lang.structureCondition.format(structure?.asTranslated()).asTranslated()
                         loreRequirements.add(text)
                     }
 
@@ -259,6 +263,21 @@ object CobblemonUtil {
                     loreRequirements.add(lang.anyRequirement.text())
                 }
 
+                is MoonPhaseRequirement -> {
+                    val req = when (requirement.moonPhase) {
+                        MoonPhase.FULL_MOON -> "Moon Phase: Full Moon"
+                        MoonPhase.WANING_GIBBOUS -> "Moon Phase: Waning Gibbous"
+                        MoonPhase.THIRD_QUARTER -> "Moon Phase: Third Quarter"
+                        MoonPhase.WANING_CRESCENT -> "Moon Phase: Waning Crescent"
+                        MoonPhase.NEW_MOON -> "Moon Phase: New Moon"
+                        MoonPhase.WAXING_CRESCENT -> "Moon Phase: Waxing Crescent"
+                        MoonPhase.FIRST_QUARTER -> "Moon Phase: First Quarter"
+                        MoonPhase.WAXING_GIBBOUS -> "Moon Phase: Waxing Gibbous"
+                    }
+
+                    loreRequirements.add(req.asTranslated());
+                }
+
             }
         }
 
@@ -269,16 +288,17 @@ object CobblemonUtil {
         return loreRequirements
     }
 
-    private fun getCatchRate(pokemon: Species): MutableComponent {
-        val baseRate: String = (pokemon.catchRate / 255.0 * 100.0).roundToInt().toString()
+    private fun getCatchRate(pokemon: FormData): MutableComponent {
+        val baseRateDouble: Double = (pokemon.catchRate / 255.0) * 100.0
+        val baseRate: String = baseRateDouble.roundToInt().toString()
         return "$baseRate%".aqua()
     }
 
-    fun getTypeToWikiGui(pokemon: Species): MutableList<Component> {
+    fun getTypeToWikiGui(pokemon: FormData): MutableList<Component> {
         return toWikiGui(getType(pokemon).yellow())
     }
 
-    fun getBaseStatsToWikiGui(pokemon: Species): MutableList<Component> {
+    fun getBaseStatsToWikiGui(pokemon: FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
 
         val initialString = " §b- §a"
@@ -316,13 +336,13 @@ object CobblemonUtil {
         return lore
     }
 
-    fun getCatchRateToWikiGui(pokemon: Species): MutableList<Component> {
+    fun getCatchRateToWikiGui(pokemon: FormData): MutableList<Component> {
         val lore : MutableList<Component> = ArrayList()
         lore.add(getCatchRate(pokemon))
         return toWikiGui(lore)
     }
 
-    private fun getSpawnDetails(species: Species) : List<PokemonSpawnDetail> {
+    private fun getSpawnDetails(formData: FormData) : List<PokemonSpawnDetail> {
 
         val cobblemonSpawnPool = CobblemonSpawnPools.WORLD_SPAWN_POOL
 
@@ -330,14 +350,14 @@ object CobblemonUtil {
             .filterIsInstance<PokemonSpawnDetail>()
             .filter {
                 it.pokemon.species != null &&
-                        it.pokemon.species == species.resourceIdentifier.path
+                        it.pokemon.species == formData.species.resourceIdentifier.path
 
             }
 
         return spawnDetails
     }
 
-    fun getSpawnTime(species: Species): MutableList<Component> {
+    fun getSpawnTime(species: FormData): MutableList<Component> {
 
         val spawnDetailsList = getSpawnDetails(species)
 
@@ -364,7 +384,7 @@ object CobblemonUtil {
         return matchingCycles
     }
 
-    private fun getSpawnBiomes(species: Species, world: Level): MutableList<Component> {
+    private fun getSpawnBiomes(species: FormData, world: Level): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
         var component: MutableComponent = "".text()
         val spawnDetail = getSpawnDetails(species)
@@ -419,11 +439,11 @@ object CobblemonUtil {
         return lore
     }
 
-    fun getSpawnBiomesToWikiGui(species: Species, world: Level): MutableList<Component> {
+    fun getSpawnBiomesToWikiGui(species: FormData, world: Level): MutableList<Component> {
         return toWikiGui(getSpawnBiomes(species, world))
     }
 
-    private fun getMovesByLevel(species : Species): MutableList<Component> {
+    private fun getMovesByLevel(species : FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
         var i = 0
         var component = "".text()
@@ -457,12 +477,12 @@ object CobblemonUtil {
         }
 
 
-    fun getMovesByLevelToWikiGui(species: Species): MutableList<Component> {
+    fun getMovesByLevelToWikiGui(species: FormData): MutableList<Component> {
         return getMovesByLevel(species)
     }
 
 
-    fun getTmMoves(species: Species): MutableList<Component> {
+    fun getTmMoves(species: FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
         var i = 0
         var component = "".text()
@@ -490,7 +510,7 @@ object CobblemonUtil {
 
     }
 
-    fun getTutorMoves(species: Species): MutableList<Component> {
+    fun getTutorMoves(species: FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
         var i = 0
         var component = "".text()
@@ -511,7 +531,7 @@ object CobblemonUtil {
         return lore
     }
 
-    fun getEvolutionMoves(species: Species): MutableList<Component> {
+    fun getEvolutionMoves(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
 
         for (move in species.moves.evolutionMoves) {
@@ -522,7 +542,7 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getEggMoves(species: Species): MutableList<Component> {
+    fun getEggMoves(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
 
         for (move in species.moves.eggMoves) {
@@ -533,7 +553,7 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getFormChangeMoves(species: Species): MutableList<Component> {
+    fun getFormChangeMoves(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
 
         for (move in species.moves.formChangeMoves) {
@@ -544,7 +564,7 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getAbilities(species: Species): MutableList<Component> {
+    fun getAbilities(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
         species.abilities.forEach {
             payload.add(it.template.displayName.yellow())
@@ -552,11 +572,11 @@ object CobblemonUtil {
         return payload
     }
 
-    private fun getBaseFriendship(species: Species): MutableComponent {
+    private fun getBaseFriendship(species: FormData): MutableComponent {
         return lang.baseFriendship.text().aqua().append(" - ").append(species.baseFriendship.toString().yellow())
     }
 
-    fun getDrops(species: Species): MutableList<Component> {
+    fun getDrops(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
 
         val drops = species.drops.entries.filterIsInstance<ItemDropEntry>()
@@ -569,7 +589,7 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getEggGroups(species: Species): MutableList<Component> {
+    fun getEggGroups(species: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
         species.eggGroups.forEach {
             payload.add(it.name.yellow())
@@ -577,22 +597,22 @@ object CobblemonUtil {
         return payload
     }
 
-    fun getDynamax(species: Species): MutableList<Component> {
+    fun getDynamax(formData: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
-        val textFormated = if (species.canGmax())  "Yes".yellow() else "Not".yellow()
+        val textFormated = if (formData.species.canGmax())  "Yes".yellow() else "Not".yellow()
         payload.add(textFormated)
         return payload
     }
 
-    fun getForms(species: Species): MutableList<Component> {
+    fun getForms(form: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
-        species.forms.forEach{
+        form.species.forms.forEach{
             payload.add(it.name.yellow())
         }
         return payload
     }
 
-    fun getEffectiveness(species: Species): MutableList<Component> {
+    fun getEffectiveness(species: FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
 
         val weaknessList = ElementalTypes.all().map { t ->
