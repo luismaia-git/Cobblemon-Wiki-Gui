@@ -17,6 +17,7 @@ import com.cobblemon.mod.common.api.text.gray
 import com.cobblemon.mod.common.api.text.plus
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.api.text.yellow
+import com.cobblemon.mod.common.api.types.ElementalType
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.pokemon.requirements.AnyRequirement
@@ -66,6 +67,7 @@ object CobblemonUtil {
     private val red = Style.EMPTY.withColor(TextColor.fromRgb(0xFF5555)).withItalic(false)
     private val lightPurple = Style.EMPTY.withColor(TextColor.fromRgb(0xFF55FF)).withItalic(false)
     private val yellow = Style.EMPTY.withColor(TextColor.fromRgb(0xFFFF55)).withItalic(false)
+    private val brightAqua = Style.EMPTY.withColor(TextColor.fromRgb(0x55FFFF)).withItalic(false)
     private val lang = CobblemonWikiGui.langConfig
 
     private fun toWikiGui(payload: MutableComponent): MutableList<Component> {
@@ -332,6 +334,21 @@ object CobblemonUtil {
             Component.translatable("cobblemon.ui.stats.speed").setStyle(darkAqua)
                 .append(initialString + (pokemon.baseStats[Stats.SPEED]))
         )
+
+        val totalBaseStats = pokemon.baseStats[Stats.HP]!! +
+                pokemon.baseStats[Stats.ATTACK]!! +
+                pokemon.baseStats[Stats.DEFENCE]!! +
+                pokemon.baseStats[Stats.SPECIAL_ATTACK]!! +
+                pokemon.baseStats[Stats.SPECIAL_DEFENCE]!! +
+                pokemon.baseStats[Stats.SPEED]!!
+
+        lore.add(Component.literal(""))
+
+        lore.add(
+            Component.translatable("cobblemon_wiki_gui.wiki.total_base_stats").setStyle(brightAqua)
+                .append(" §b- §e$totalBaseStats")
+        )
+
         lore.add(getBaseFriendship(pokemon))
         return lore
     }
@@ -615,19 +632,28 @@ object CobblemonUtil {
     fun getEffectiveness(species: FormData): MutableList<Component> {
         val lore: MutableList<Component> = ArrayList()
 
-        val weaknessList = ElementalTypes.all().map { t ->
+        // Get all elemental types - manually list all types that exist in Cobblemon
+        val allTypes = listOf(
+            ElementalTypes.NORMAL, ElementalTypes.FIRE, ElementalTypes.WATER, ElementalTypes.GRASS,
+            ElementalTypes.ELECTRIC, ElementalTypes.ICE, ElementalTypes.FIGHTING, ElementalTypes.POISON,
+            ElementalTypes.GROUND, ElementalTypes.FLYING, ElementalTypes.PSYCHIC, ElementalTypes.BUG,
+            ElementalTypes.ROCK, ElementalTypes.GHOST, ElementalTypes.DRAGON, ElementalTypes.DARK,
+            ElementalTypes.STEEL, ElementalTypes.FAIRY
+        )
+
+        val weaknessList = allTypes.map { t ->
             t to TypeChart.getEffectiveness(t, species.types)
         }.filter { (_, effectiveness) ->
             effectiveness > 0
         }
 
-        val resistantList = ElementalTypes.all().map { t ->
+        val resistantList = allTypes.map { t ->
             t to TypeChart.getEffectiveness(t, species.types)
         }.filter { (_, effectiveness) ->
             effectiveness < 0
         }
 
-        val immuneList = ElementalTypes.all().map { t ->
+        val immuneList = allTypes.map { t ->
             t to TypeChart.getImmunity(t, species.types)
         }.filter { (_, isImmune) ->
             !isImmune

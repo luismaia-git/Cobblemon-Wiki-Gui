@@ -8,6 +8,7 @@ import com.cwg.mod.command.CobblemonWikiGuiCommands
 import com.cwg.mod.fabric.net.CobblemonWikiGuiFabricNetworkManager
 import com.cwg.mod.fabric.permission.FabricPermissionValidator
 import com.cwg.mod.net.messages.client.lang.LangSyncPacket
+import com.cwg.mod.net.messages.client.pokemon.PokemonNamesSyncPacket
 import com.mojang.brigadier.arguments.ArgumentType
 import net.fabricmc.api.EnvType
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry
@@ -36,9 +37,16 @@ object CobblemonWikiGuiFabric : CobblemonWikiGuiImplementation {
         networkManager.registerServerHandlers()
         registerCommands()
 
-        ServerPlayConnectionEvents.JOIN.register { handler, sender, server ->
+        ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
+            val player = handler.player
+
+            // Send language config
             val langMap = CobblemonWikiGui.langConfig.toMap()
-            LangSyncPacket(langMap).sendToPlayer(handler.player)
+            LangSyncPacket(langMap).sendToPlayer(player)
+
+            // TODO: Implement client-to-server locale packet to get actual client language
+            // For now, we'll need to check config files or wait for client to send its locale
+            // This can be implemented by creating a ClientLocalePacket that the client sends on join
         }
 
     }

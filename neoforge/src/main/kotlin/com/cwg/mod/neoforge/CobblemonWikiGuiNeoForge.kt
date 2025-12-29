@@ -9,6 +9,7 @@ import com.cwg.mod.neoforge.client.CobblemonWikiGuiNeoForgeClient
 import com.cwg.mod.neoforge.net.CobblemonWikiGuiNeoForgeNetworkManager
 import com.cwg.mod.neoforge.permission.ForgePermissionValidator
 import com.cwg.mod.net.messages.client.lang.LangSyncPacket
+import com.cwg.mod.net.messages.client.pokemon.PokemonNamesSyncPacket
 import com.mojang.brigadier.arguments.ArgumentType
 import java.util.UUID
 import net.minecraft.commands.synchronization.ArgumentTypeInfo
@@ -85,8 +86,13 @@ class CobblemonWikiGuiNeoForge : CobblemonWikiGuiImplementation {
     }
 
     private fun sendLangConfigToPlayer(player: ServerPlayer) {
+        // Send language config
         val langMap = CobblemonWikiGui.langConfig.toMap()
         LangSyncPacket(langMap).sendToPlayer(player)
+
+        // TODO: Implement client-to-server locale packet to get actual client language
+        // For now, we'll need to check config files or wait for client to send its locale
+        // This can be implemented by creating a ClientLocalePacket that the client sends on join
     }
 
     fun onLogin(event: PlayerEvent.PlayerLoggedInEvent) {

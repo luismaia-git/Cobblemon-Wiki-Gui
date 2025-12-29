@@ -1,8 +1,8 @@
 package com.cwg.mod.command
 
 import com.cobblemon.mod.common.command.argument.FormArgumentType
-import com.cobblemon.mod.common.command.argument.SpeciesArgumentType
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
+import com.cwg.mod.command.argument.LocaleSpeciesArgumentType
 import com.cwg.mod.gui.PokeWikiGui
 import com.cwg.mod.util.alias
 import com.cwg.mod.util.permission
@@ -31,7 +31,7 @@ object PokeWikiCommand {
         // Comando para si mesmo
         val selfCommand = dispatcher.register(literal(NAME)
             .permission(CobblemonWikiGuiPermissions.PWIKI)
-            .then(argument(SPECIES, SpeciesArgumentType.species())
+            .then(argument(SPECIES, LocaleSpeciesArgumentType.species())
                 // Executa sem forma especificada
                 .executes { execute(it, it.source.playerOrException, null) }
                 // Ou com forma especificada (opcional)
@@ -45,7 +45,7 @@ object PokeWikiCommand {
         // Comando para outro jogador
         val otherCommand = dispatcher.register(literal(NAME_OTHER)
             .permission(CobblemonWikiGuiPermissions.PWIKIANOTHER)
-            .then(argument(SPECIES, SpeciesArgumentType.species())
+            .then(argument(SPECIES, LocaleSpeciesArgumentType.species())
                 .then(argument(PLAYER, EntityArgument.player())
                     // Executa sem forma especificada
                     .executes { execute(it, it.player(), null) }
@@ -58,18 +58,45 @@ object PokeWikiCommand {
         }
     }
 
-    fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer, formName: String?): Int {
+    fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer, formData: com.cobblemon.mod.common.pokemon.FormData?): Int {
         try {
-            val pokemonSpecies = SpeciesArgumentType.getPokemon(context, SPECIES)
+            val pokemonSpecies = LocaleSpeciesArgumentType.getPokemon(context, SPECIES)
 
             if (!context.source.isPlayer && player == context.source.playerOrException) {
                 context.source.sendFailure(Component.literal("Command without target player cannot be executed by console"))
                 return 0
             }
 
-            val species = if (formName != null) {
-                val form = pokemonSpecies.getFormByName(formName)
-                form
+            val species = if (formData != null) {
+                // Get the form name from the provided FormData
+                val formName = formData.name
+
+                // Get the correct form from the parsed species (e.g., Articuno's galar form)
+                val correctForm = pokemonSpecies.getFormByName(formName)
+
+                if (correctForm == null) {
+                    // Try flexible matching as fallback
+                    val normalizedInput = formName.lowercase().replace("-", "").replace("_", "").replace(" ", "")
+
+                    pokemonSpecies.forms.find { form ->
+                        val normalizedFormName = form.name.lowercase().replace("-", "").replace("_", "").replace(" ", "")
+                        val normalizedShowdownId = form.formOnlyShowdownId().lowercase().replace("-", "").replace("_", "")
+
+                        normalizedFormName == normalizedInput ||
+                        normalizedFormName.startsWith(normalizedInput) ||
+                        normalizedInput.startsWith(normalizedFormName) ||
+                        normalizedShowdownId == normalizedInput ||
+                        normalizedShowdownId.startsWith(normalizedInput)
+                    } ?: run {
+                        val availableForms = pokemonSpecies.forms.joinToString(", ") { it.name }
+                        context.source.sendFailure(
+                            Component.literal("Form '${formName}' not found for ${pokemonSpecies.name}. Available forms: ${availableForms}")
+                        )
+                        return 0
+                    }
+                } else {
+                    correctForm
+                }
             } else {
                 pokemonSpecies.standardForm
             }
@@ -84,10 +111,11 @@ object PokeWikiCommand {
         }
     }
 
-    private fun CommandContext<CommandSourceStack>.form(): String? {
+    private fun CommandContext<CommandSourceStack>.form(): com.cobblemon.mod.common.pokemon.FormData? {
         return try {
-            getArgument(FORM, String::class.java)
-        } catch (_: Exception) {
+            // FormArgumentType returns FormData, not String
+            getArgument(FORM, com.cobblemon.mod.common.pokemon.FormData::class.java)
+        } catch (e: Exception) {
             null
         }
     }

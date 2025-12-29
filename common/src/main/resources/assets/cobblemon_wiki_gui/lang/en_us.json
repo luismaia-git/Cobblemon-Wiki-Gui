@@ -20,6 +20,7 @@
   "cobblemon_wiki_gui.wiki.forms": "Forms",
   "cobblemon_wiki_gui.wiki.dynamax": "Dynamax",
   "cobblemon_wiki_gui.wiki.base_exp_yield": "Base Exp Yield",
+  "cobblemon_wiki_gui.wiki.total_base_stats": "Total base stats",
 
   "cobblemon_wiki_gui.wiki.weakness": "Is weak against",
   "cobblemon_wiki_gui.wiki.resistant": "Resistant against:",

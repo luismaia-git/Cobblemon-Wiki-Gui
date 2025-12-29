@@ -1,0 +1,33 @@
+{
+  "cobblemon_wiki_gui.wiki.basestats" : "种族值",
+  "cobblemon_wiki_gui.wiki.type" : "属性",
+  "cobblemon_wiki_gui.wiki.effectiveness": "属性相克",
+  "cobblemon_wiki_gui.wiki.catchrate" : "捕获率",
+  "cobblemon_wiki_gui.wiki.spawnbiome" : "生成群系",
+  "cobblemon_wiki_gui.wiki.spawntime" : "生成时间",
+  "cobblemon_wiki_gui.wiki.spawnlocations" : "生成时间",
+  "cobblemon_wiki_gui.wiki.evolutions" : "进化",
+  "cobblemon_wiki_gui.wiki.movesbylevel": "等级技能",
+  "cobblemon_wiki_gui.wiki.tm_moves": "技能机技能",
+  "cobblemon_wiki_gui.wiki.tutor_moves": "教学技能",
+  "cobblemon_wiki_gui.wiki.evolution_moves": "进化技能",
+  "cobblemon_wiki_gui.wiki.egg_moves": "遗传技能",
+  "cobblemon_wiki_gui.wiki.form_change_moves": "形态变化技能",
+  "cobblemon_wiki_gui.wiki.abilities": "特性",
+  "cobblemon_wiki_gui.wiki.base_friendship": "基础亲密度",
+  "cobblemon_wiki_gui.wiki.drops": "掉落物",
+  "cobblemon_wiki_gui.wiki.egg_groups": "蛋群",
+  "cobblemon_wiki_gui.wiki.forms": "形态",
+  "cobblemon_wiki_gui.wiki.dynamax": "极巨化",
+  "cobblemon_wiki_gui.wiki.base_exp_yield": "基础经验值",
+  "cobblemon_wiki_gui.wiki.total_base_stats": "种族值总和",
+
+  "cobblemon_wiki_gui.wiki.weakness": "弱点属性",
+  "cobblemon_wiki_gui.wiki.resistant": "抗性属性:",
+  "cobblemon_wiki_gui.wiki.immune": "免疫属性:",
+  "cobblemon_wiki_gui.wiki.poke.info": "点击获取更多信息",
+  "cobblemon_wiki_gui.command.pokewiki.error.notplayer" : "此命令必须由玩家执行。"
+
+
+
+}
