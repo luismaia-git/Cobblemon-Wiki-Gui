@@ -12,5 +12,7 @@ class CobblemonWikiGuiConfig {
     }
 
     var version: String = "1.0.0"
+
+    var language: String = "en_us" // Default language code. Change as needed. (zn_cn)
 }
 

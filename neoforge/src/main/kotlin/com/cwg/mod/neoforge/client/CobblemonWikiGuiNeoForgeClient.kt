@@ -4,7 +4,6 @@ package com.cwg.mod.neoforge.client
 import com.cwg.mod.CobblemonWikiGuiClientImplementation
 import com.cwg.mod.CobblemonWikiGuiNetwork
 import com.cwg.mod.client.CobblemonWikiGuiClient
-import com.cwg.mod.net.messages.server.ClientLocalePacket
 import net.minecraft.client.Minecraft
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent

@@ -26,7 +26,7 @@ object CobblemonWikiGui {
 
     const val MOD_ID: String = "cobblemon_wiki_gui"
     const val MOD_NAME: String = "Cobblemon Wiki Gui"
-    const val VERSION: String = "2.2.1"
+    const val VERSION: String = "2.2.0"
     const val CONFIG_PATH = "config/$MOD_ID/main.json"
     const val CONFIG_LANG_PATH = "config/$MOD_ID/lang.json"
 
@@ -94,9 +94,15 @@ object CobblemonWikiGui {
     private fun initializeConfig() {
         loadMainConfig()
         loadLangConfig()
+        // Ensure the loaded Pokemon names config is assigned to the global variable
+        this.pokemonNamesConfig = loadPokemonNamesConfig(this.config.language)
+
+        // Log the resulting config size so we can verify it was loaded during initialization
+        LOGGER.info("PokemonNamesConfig size after initializeConfig: ${this.pokemonNamesConfig.size()}")
 
         saveConfig(this.config)
         saveLangConfig(this.langConfig)
+        savePokemonNamesConfig(this.pokemonNamesConfig, this.config.language)
     }
 
     fun loadConfig() {
@@ -208,9 +214,11 @@ object CobblemonWikiGui {
                 val map = PokemonNamesConfig.GSON.fromJson(fileReader, Map::class.java) as? Map<String, String>
                 fileReader.close()
 
-                if (map != null) {
+                if (map != null && map.isNotEmpty()) {
                     LOGGER.info("Loaded ${map.size} Pokemon name mappings for locale: $normalizedLocale")
                     return PokemonNamesConfig.fromMap(map)
+                } else {
+                    LOGGER.info("Config file exists but is empty or invalid at: ${configFile.absolutePath}")
                 }
             } catch (exception: Exception) {
                 LOGGER.error("Failed to load Pokemon names config for locale $normalizedLocale:")
@@ -221,6 +229,30 @@ object CobblemonWikiGui {
             LOGGER.info("Please place your config file at: ${configFile.absolutePath}")
             // Create an example file for users to fill in
             createExamplePokemonNamesFile(configFile, normalizedLocale)
+        }
+
+        // Fallback: search parent directories for a non-empty config file (useful for developer run configs)
+        try {
+            var dir: File? = File(System.getProperty("user.dir"))?.absoluteFile
+            var levels = 0
+            while (dir != null && levels < 6) {
+                val candidate = File(dir, configPath)
+                if (candidate.exists() && candidate.canRead()) {
+                    LOGGER.info("Found fallback Pokemon names config at: ${candidate.absolutePath}")
+                    val reader = FileReader(candidate)
+                    val fallbackMap = PokemonNamesConfig.GSON.fromJson(reader, Map::class.java) as? Map<String, String>
+                    reader.close()
+                    if (fallbackMap != null && fallbackMap.isNotEmpty()) {
+                        LOGGER.info("Loaded ${fallbackMap.size} Pokemon name mappings from fallback for locale: $normalizedLocale")
+                        return PokemonNamesConfig.fromMap(fallbackMap)
+                    }
+                }
+                dir = dir.parentFile
+                levels++
+            }
+        } catch (e: Exception) {
+            LOGGER.error("Error while searching for fallback Pokemon names config:")
+            e.printStackTrace()
         }
 
         return PokemonNamesConfig()

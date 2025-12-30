@@ -44,6 +44,14 @@ object CobblemonWikiGuiFabric : CobblemonWikiGuiImplementation {
             val langMap = CobblemonWikiGui.langConfig.toMap()
             LangSyncPacket(langMap).sendToPlayer(player)
 
+            // Send pokemon names config mappings so the client has localized names
+            try {
+                val pokemonMap = CobblemonWikiGui.pokemonNamesConfig.toMap()
+                PokemonNamesSyncPacket(pokemonMap).sendToPlayer(player)
+            } catch (e: Exception) {
+                CobblemonWikiGui.LOGGER.error("Failed to send Pokemon names sync packet to player: ", e)
+            }
+
             // TODO: Implement client-to-server locale packet to get actual client language
             // For now, we'll need to check config files or wait for client to send its locale
             // This can be implemented by creating a ClientLocalePacket that the client sends on join

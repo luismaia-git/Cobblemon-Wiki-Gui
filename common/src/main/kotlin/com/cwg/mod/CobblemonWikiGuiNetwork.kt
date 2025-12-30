@@ -6,8 +6,6 @@ import com.cwg.mod.client.net.pokemon.PokemonNamesSyncPacketHandler
 import com.cwg.mod.net.PacketRegisterInfo
 import com.cwg.mod.net.messages.client.lang.LangSyncPacket
 import com.cwg.mod.net.messages.client.pokemon.PokemonNamesSyncPacket
-import com.cwg.mod.net.messages.server.ClientLocalePacket
-import com.cwg.mod.server.net.ClientLocalePacketHandler
 import com.cwg.mod.util.server
 import net.minecraft.server.level.ServerPlayer
 
@@ -39,9 +37,6 @@ object CobblemonWikiGuiNetwork {
 
     private fun generateC2SPacketInfoList(): List<PacketRegisterInfo<*>> {
         val list = mutableListOf<PacketRegisterInfo<*>>()
-
-        // Client locale packet
-        list.add(PacketRegisterInfo(ClientLocalePacket.ID, ClientLocalePacket::decode, ClientLocalePacketHandler))
 
         return list
     }
