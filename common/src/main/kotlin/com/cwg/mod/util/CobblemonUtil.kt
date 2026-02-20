@@ -12,42 +12,14 @@ import com.cobblemon.mod.common.api.spawning.TimeRange
 import com.cobblemon.mod.common.api.spawning.condition.MoonPhase
 import com.cobblemon.mod.common.api.spawning.condition.SpawningCondition
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
-import com.cobblemon.mod.common.api.text.aqua
-import com.cobblemon.mod.common.api.text.blue
-import com.cobblemon.mod.common.api.text.gray
-import com.cobblemon.mod.common.api.text.plus
-import com.cobblemon.mod.common.api.text.text
-import com.cobblemon.mod.common.api.text.yellow
+import com.cobblemon.mod.common.api.text.*
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.pokemon.FormData
-import com.cobblemon.mod.common.pokemon.requirements.AnyRequirement
-import com.cobblemon.mod.common.pokemon.requirements.AttackDefenceRatioRequirement
-import com.cobblemon.mod.common.pokemon.requirements.BiomeRequirement
-import com.cobblemon.mod.common.pokemon.requirements.BlocksTraveledRequirement
-import com.cobblemon.mod.common.pokemon.requirements.DefeatRequirement
-import com.cobblemon.mod.common.pokemon.requirements.FriendshipRequirement
-import com.cobblemon.mod.common.pokemon.requirements.HeldItemRequirement
-import com.cobblemon.mod.common.pokemon.requirements.LevelRequirement
-import com.cobblemon.mod.common.pokemon.requirements.MoonPhaseRequirement
-import com.cobblemon.mod.common.pokemon.requirements.MoveSetRequirement
-import com.cobblemon.mod.common.pokemon.requirements.MoveTypeRequirement
-import com.cobblemon.mod.common.pokemon.requirements.RecoilRequirement
-import com.cobblemon.mod.common.pokemon.requirements.StatCompareRequirement
-import com.cobblemon.mod.common.pokemon.requirements.StatEqualRequirement
-import com.cobblemon.mod.common.pokemon.requirements.StructureRequirement
-import com.cobblemon.mod.common.pokemon.requirements.TimeRangeRequirement
-import com.cobblemon.mod.common.pokemon.requirements.UseMoveRequirement
 import com.cobblemon.mod.common.pokemon.evolution.variants.BlockClickEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.ItemInteractionEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.TradeEvolution
-import com.cobblemon.mod.common.registry.BiomeIdentifierCondition
-import com.cobblemon.mod.common.registry.BiomeTagCondition
-import com.cobblemon.mod.common.registry.FluidIdentifierCondition
-import com.cobblemon.mod.common.registry.FluidTagCondition
-import com.cobblemon.mod.common.registry.ItemIdentifierCondition
-import com.cobblemon.mod.common.registry.ItemTagCondition
-import com.cobblemon.mod.common.registry.StructureIdentifierCondition
-import com.cobblemon.mod.common.registry.StructureTagCondition
+import com.cobblemon.mod.common.pokemon.requirements.*
+import com.cobblemon.mod.common.registry.*
 import com.cobblemon.mod.common.util.asTranslated
 import com.cwg.mod.CobblemonWikiGui
 import net.minecraft.ChatFormatting
@@ -56,7 +28,6 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import kotlin.math.roundToInt
 
@@ -127,7 +98,7 @@ object CobblemonUtil {
                 if (block is RegistryLikeTagCondition<Block>) requiredContextIdentifier = block.tag.location
                 val itemName = "block.${requiredContextIdentifier?.toLanguageKey()}".asTranslated()
                 val fullText = lang.rightClick.format( itemName.string).asTranslated()
-                loreRequirements.add(fullText);
+                loreRequirements.add(fullText)
             }
         }
 
@@ -278,7 +249,7 @@ object CobblemonUtil {
                         MoonPhase.WAXING_GIBBOUS -> "Moon Phase: Waxing Gibbous"
                     }
 
-                    loreRequirements.add(req.asTranslated());
+                    loreRequirements.add(req.asTranslated())
                 }
 
             }
