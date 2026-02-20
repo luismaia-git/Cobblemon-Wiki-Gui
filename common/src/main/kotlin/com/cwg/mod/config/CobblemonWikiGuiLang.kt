@@ -67,6 +67,9 @@ class CobblemonWikiGuiLang {
     var goBackClick: String = "Click to go back"
     var seeEvolutions : String = "Click to see evolutions"
 
+    var seeCondtions : String = "Click to see spawn conditions"
+    var noSpawnConditionFound: String = "No spawn conditions found for %s"
+
     var basestats: String = "Base Stats"
     var type: String = "Type"
     var effectiveness : String = "Effectiveness"

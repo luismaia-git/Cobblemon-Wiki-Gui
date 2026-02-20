@@ -1,7 +1,6 @@
 package com.cwg.mod.util
 
 import com.cobblemon.mod.common.CobblemonItems
-import com.cobblemon.mod.common.api.conditional.RegistryLikeCondition
 import com.cobblemon.mod.common.api.conditional.RegistryLikeTagCondition
 import com.cobblemon.mod.common.api.drop.ItemDropEntry
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties
@@ -11,8 +10,10 @@ import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.spawning.CobblemonSpawnPools
 import com.cobblemon.mod.common.api.spawning.TimeRange
 import com.cobblemon.mod.common.api.spawning.condition.MoonPhase
+import com.cobblemon.mod.common.api.spawning.condition.SpawningCondition
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.text.aqua
+import com.cobblemon.mod.common.api.text.blue
 import com.cobblemon.mod.common.api.text.gray
 import com.cobblemon.mod.common.api.text.plus
 import com.cobblemon.mod.common.api.text.text
@@ -39,22 +40,24 @@ import com.cobblemon.mod.common.pokemon.requirements.UseMoveRequirement
 import com.cobblemon.mod.common.pokemon.evolution.variants.BlockClickEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.ItemInteractionEvolution
 import com.cobblemon.mod.common.pokemon.evolution.variants.TradeEvolution
+import com.cobblemon.mod.common.registry.BiomeIdentifierCondition
 import com.cobblemon.mod.common.registry.BiomeTagCondition
+import com.cobblemon.mod.common.registry.FluidIdentifierCondition
+import com.cobblemon.mod.common.registry.FluidTagCondition
 import com.cobblemon.mod.common.registry.ItemIdentifierCondition
+import com.cobblemon.mod.common.registry.ItemTagCondition
+import com.cobblemon.mod.common.registry.StructureIdentifierCondition
+import com.cobblemon.mod.common.registry.StructureTagCondition
 import com.cobblemon.mod.common.util.asTranslated
 import com.cwg.mod.CobblemonWikiGui
 import net.minecraft.ChatFormatting
-import net.minecraft.core.HolderSet
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.block.Block
-import java.util.Optional
 import kotlin.math.roundToInt
 
 
@@ -342,7 +345,7 @@ object CobblemonUtil {
         return toWikiGui(lore)
     }
 
-    private fun getSpawnDetails(formData: FormData) : List<PokemonSpawnDetail> {
+    fun getSpawnDetails(formData: FormData) : List<PokemonSpawnDetail> {
 
         val cobblemonSpawnPool = CobblemonSpawnPools.WORLD_SPAWN_POOL
 
@@ -357,17 +360,12 @@ object CobblemonUtil {
         return spawnDetails
     }
 
-    fun getSpawnTime(species: FormData): MutableList<Component> {
-
-        val spawnDetailsList = getSpawnDetails(species)
-
+    fun getSpawnTime(conditions: MutableList<SpawningCondition<*>>): MutableList<Component> {
         val timeRanges = mutableListOf<IntRange>()
 
-        spawnDetailsList.forEach { spawnDetails ->
-            spawnDetails.conditions.forEach { condition ->
-                condition.timeRange?.ranges?.let { ranges ->
-                    timeRanges.addAll(ranges)
-                }
+        conditions.forEach { condition ->
+            condition.timeRange?.ranges?.let { ranges ->
+                timeRanges.addAll(ranges)
             }
         }
 
@@ -384,63 +382,111 @@ object CobblemonUtil {
         return matchingCycles
     }
 
-    private fun getSpawnBiomes(species: FormData, world: Level): MutableList<Component> {
-        val lore: MutableList<Component> = ArrayList()
-        var component: MutableComponent = "".text()
-        val spawnDetail = getSpawnDetails(species)
-        val hasOverworldCondition = spawnDetail.any { s ->
-            s.conditions.any { condition ->
-                // Check if the condition has biomes defined
-                condition.biomes?.any { biomeCondition ->
-                    // Check if any of the biome conditions is the "cobblemon:is_overworld" tag
-                    when (biomeCondition) {
-                        is BiomeTagCondition -> biomeCondition.tag.location.toString() == "cobblemon:is_overworld"
-                        else -> false
-                    }
-                } ?: false
+    private fun SpawningCondition<*>.toLoreLines(prefix: String = "- "): List<String> =
+        buildList {
+            biomes?.takeIf { it.isNotEmpty() }?.let { set ->
+                add(
+                    "${prefix}Biomes: ${
+                        set.joinToString { cond ->
+                            when (cond) {
+                                is BiomeTagCondition -> "#${cond.tag.location}"
+                                is FluidTagCondition -> "[Fluid] #${cond.tag.location}"
+                                is ItemTagCondition -> "[Item] #${cond.tag.location}"
+                                is StructureTagCondition -> "[Structure] #${cond.tag.location}"
+
+                                is BiomeIdentifierCondition -> "#${cond.identifier}"
+                                is FluidIdentifierCondition -> "[Fluid] #${cond.identifier}"
+                                is ItemIdentifierCondition -> "[Item] #${cond.identifier}"
+                                is StructureIdentifierCondition -> "[Structure] #${cond.identifier}"
+                                
+                                else -> "[Unknown] $cond"
+                            }
+                        }
+                    }"
+                )
             }
-        }
+            moonPhase?.let { add("${prefix}Moon Phase: $it") }
+            canSeeSky?.let { add("${prefix}Can See Sky: $it") }
 
-        if (hasOverworldCondition) {
-            lore.add("Overworld".text())
-            return lore
-        }
+            val axes = buildList<String> {
 
-        val biomes = BiomeUtils.getAllBiomes(world)
-        val validBiomes = biomes.filter { biome ->
-            getSpawnDetails(species).any { s ->
-                s.conditions.any { c ->
-                    BiomeUtils.canSpawnAt(biome.biome, world, c)
+                val xRange = when {
+                    minX != null && maxX != null -> "$minX-$maxX"
+                    minX != null -> "$minX+"
+                    maxX != null -> "0-$maxX"
+                    else -> null
                 }
+                xRange?.let { add("X[$it]") }
+
+                val yRange = when {
+                    minY != null && maxY != null -> "$minY-$maxY"
+                    minY != null -> "$minY+"
+                    maxY != null -> "0-$maxY"
+                    else -> null
+                }
+                yRange?.let { add("Y[$it]") }
+
+                val zRange = when {
+                    minZ != null && maxZ != null -> "$minZ-$maxZ"
+                    minZ != null -> "$minZ+"
+                    maxZ != null -> "0-$maxZ"
+                    else -> null
+                }
+                zRange?.let { add("Z[$it]") }
             }
+
+            if (axes.isNotEmpty()) {
+                add("${prefix}Area: ${axes.joinToString(", ")}")
+            }
+
+            val lightRange = when {
+                minLight != null && maxLight != null -> "$minLight-$maxLight"
+                minLight != null -> "$minLight+"
+                maxLight != null -> "0-$maxLight"
+                else -> null
+            }
+
+            lightRange?.let { add("${prefix}Light: $it") }
+
+            val skyLightRange = when {
+                minSkyLight != null && maxSkyLight != null -> "$minSkyLight-$maxSkyLight"
+                minSkyLight != null -> "$minSkyLight+"
+                maxSkyLight != null -> "0-$maxSkyLight"
+                else -> null
+            }
+            skyLightRange?.let { add("${prefix}Sky Light: $it") }
+
+            if (isRaining == true) add("${prefix}Raining")
+            if (isThundering == true) add("${prefix}Thundering")
+            if (isSlimeChunk == true) add("${prefix}Slime Chunk")
+
+            structures?.takeIf { it.isNotEmpty() }?.let { set ->
+                val names = set.joinToString { either ->
+                    either.map(
+                        { it.namespace + ":" + it.path },
+                        { it.location.namespace + ":" + it.location.path }
+                    )
+                }
+
+                add("${prefix}Structures: $names")
+            }
+
+            markers?.takeIf { it.isNotEmpty() }
+                ?.let { add("${prefix}Markers: ${it.joinToString()}") }
         }
 
-        var i = 0
-
-        validBiomes.forEach { biome ->
-            if (i > 0 && i.mod(3) == 0) {
-                lore.add(component)
-                component = "".text()
+    fun addConditionSection(
+        lore: MutableList<Component>,
+        title: String,
+        conditions: List<SpawningCondition<*>>
+    ) {
+        conditions.forEach { condition ->
+            val lines = condition.toLoreLines()
+            if (lines.isNotEmpty()) {
+                lore.add(title.blue().bold())
+                lines.forEach { lore.add(it.yellow()) }
             }
-
-            if (i.mod(3) != 0) {
-                component.append(" / ".gray())
-            }
-
-            component.append("biome.${biome.identifier.toLanguageKey()}".asTranslated().yellow())
-
-            i += 1
         }
-
-        if (component.contents.toString().isNotEmpty()) {
-            lore.add(component)
-        }
-
-        return lore
-    }
-
-    fun getSpawnBiomesToWikiGui(species: FormData, world: Level): MutableList<Component> {
-        return toWikiGui(getSpawnBiomes(species, world))
     }
 
     private fun getMovesByLevel(species : FormData): MutableList<Component> {
