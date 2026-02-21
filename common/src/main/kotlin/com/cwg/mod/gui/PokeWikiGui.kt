@@ -114,7 +114,11 @@ object PokeWikiGui {
             ,
             GuiHelper.createEmptyButton(ItemStack(Items.OAK_SAPLING))
                 .setName(lang.spawnbiome.text())
-                .setLore(CobblemonUtil.getSpawnBiomesToWikiGui(species, serverPlayerEntity.serverLevel()))
+                .setLore(listOf(lang.seeCondtions.text()))
+                .setCallback { _, _, _, gui ->
+                    gui.close()
+                    SpawnConditionGui.open(species, serverPlayerEntity)
+                }
                 .build()
             ,
             GuiHelper.createPokemonButton(species)
@@ -124,11 +128,6 @@ object PokeWikiGui {
                     gui.close()
                     EvolutionsGui.open(species, serverPlayerEntity)
                 }
-                .build()
-            ,
-            GuiHelper.createEmptyButton(ItemStack(Items.CLOCK))
-                .setName(Component.literal(lang.spawntime))
-                .setLore(CobblemonUtil.getSpawnTime(species))
                 .build()
             ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.ABILITY_CAPSULE))

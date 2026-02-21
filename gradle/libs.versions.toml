@@ -12,7 +12,7 @@ loom = "1.11-SNAPSHOT"
 architectury-plugin = "3.4-SNAPSHOT"
 
 # Common
-cobblemon = "1.7.0+1.21.1"
+cobblemon = "1.7.3+1.21.1"
 sgui = "1.6.1+1.21.1"
 
 # Fabric

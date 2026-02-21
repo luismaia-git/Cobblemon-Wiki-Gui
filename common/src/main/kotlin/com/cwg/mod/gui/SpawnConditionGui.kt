@@ -1,23 +1,26 @@
 package com.cwg.mod.gui
 
-import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
+import com.cobblemon.mod.common.api.text.blue
+import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.api.text.red
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.api.text.yellow
+import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.FormData
-import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.helper.GuiHelper
 import com.cwg.mod.util.CobblemonUtil
+import com.cwg.mod.util.CobblemonUtil.addConditionSection
+import com.cwg.mod.util.CobblemonUtil.getSpawnDetails
 import eu.pb4.sgui.api.elements.GuiElement
+import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
-import net.minecraft.ResourceLocationException
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Items
 
-object EvolutionsGui {
+object SpawnConditionGui {
     val lang = CobblemonWikiGui.langConfig
 
     private val CONTENT_SPACE = arrayOf(
@@ -31,55 +34,49 @@ object EvolutionsGui {
         val gui = SimpleGui(MenuType.GENERIC_9x4, player, false)
         val redPane = GuiHelper.RED_PANE
 
-        gui.title = Component.literal("Cobblemon Wiki - Evolutions").red()
+        gui.title = Component.literal("Spawn Conditions").red()
 
-        val evolutions = species.evolutions
-        val evolutionButtons: MutableList<GuiElement> = mutableListOf()
+        val spawnConditionButtons: MutableList<GuiElement> = mutableListOf()
 
-        if (evolutions.isEmpty()) {
-            val noEvolutionButton = GuiHelper
+        getSpawnDetails(species).forEach { s ->
+            val lore: MutableList<Component> = ArrayList()
+            addConditionSection(lore, "Conditions: ", s.conditions)
+            addConditionSection(lore, "Anti-Conditions: ", s.anticonditions)
+
+
+            val spawnTimes = CobblemonUtil.getSpawnTime(s.conditions)
+            lore.add("Time: ".blue())
+            spawnTimes.forEach { time -> lore.add("- ".text().yellow().append(time))}
+
+
+            val button = GuiElementBuilder(PokemonItem.from(species.species))
+                .setName(Component.literal("§a${species.species.name} §b[§e${s.bucket.name}§b]"))
+                .setLore(lore)
+                .build()
+            spawnConditionButtons.add(button)
+        }
+
+        if (spawnConditionButtons.isEmpty()) {
+            val noSpawnConditionButton = GuiHelper
                 .createEmptyButton(Items.PAPER.defaultInstance)
-                .setName(lang.noEvolutionFound.format(species.species.name).text().yellow())
+                .setName(lang.noSpawnConditionFound.format(species.species.name).text().yellow())
                 .setLore(listOf(lang.goBackClick.text()))
                 .setCallback { _, _, _, gui ->
                     gui.close()
                     PokeWikiGui.open(species, gui.player)
                 }
                 .build()
-            gui.setSlot(13, noEvolutionButton)
-        } else {
-            // Criar botões de todas as evoluções
-            evolutions.forEach { evolution ->
-                val pokemonSpecies = evolution.result.species?.let {
-                    try {
-                        PokemonSpecies.getByIdentifier(it.asIdentifierDefaultingNamespace())
-                    } catch (_: ResourceLocationException) {
-                        null
-                    }
-                }
+            gui.setSlot(13, noSpawnConditionButton)
+        }
 
-                if (pokemonSpecies != null) {
-                    val loreRequirements = CobblemonUtil.getRequirementsToWikiGui(evolution)
-                    val button = GuiHelper.createPokemonButton(pokemonSpecies.standardForm)
-                        .setLore(loreRequirements)
-                        .setCallback { _, _, _, gui ->
-                            gui.close()
-                            PokeWikiGui.open(pokemonSpecies.standardForm, gui.player)
-                        }
-                        .build()
-                    evolutionButtons.add(button)
-                }
-            }
-
-
-            val totalPages = (evolutionButtons.size + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
+            val totalPages = (spawnConditionButtons.size + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
             val currentPage = page.coerceIn(0, maxOf(0, totalPages - 1))
             val startIndex = currentPage * ITEMS_PER_PAGE
-            val endIndex = minOf(startIndex + ITEMS_PER_PAGE, evolutionButtons.size)
+            val endIndex = minOf(startIndex + ITEMS_PER_PAGE, spawnConditionButtons.size)
 
             for (i in startIndex until endIndex) {
                 val slotIndex = CONTENT_SPACE[i - startIndex]
-                gui.setSlot(slotIndex, evolutionButtons[i])
+                gui.setSlot(slotIndex, spawnConditionButtons[i])
             }
 
             if (currentPage > 0) {
@@ -113,7 +110,7 @@ object EvolutionsGui {
                     .build()
                 gui.setSlot(22, pageIndicator)
             }
-        }
+
 
         val backButton = GuiHelper
             .createEmptyButton(Items.BARRIER.defaultInstance)
