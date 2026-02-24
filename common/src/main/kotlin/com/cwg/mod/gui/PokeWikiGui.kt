@@ -29,7 +29,9 @@ object PokeWikiGui {
         }
 
         val gui = SimpleGui(MenuType.GENERIC_9x6, playerEntity, false)
-        gui.title = Component.literal("Cobblemon Wiki").red()
+        gui.title = Component.literal(
+            WikiGuiTitle.build(formData.name, formData.species.standardForm.name, formData.species.translatedName.string)
+        ).red()
 
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL,gui, 0, 0, 8, redPane)
         GuiHelper.setLine(GuiHelper.LineType.VERTICAL, gui, 0, 1, 3, redPane)
