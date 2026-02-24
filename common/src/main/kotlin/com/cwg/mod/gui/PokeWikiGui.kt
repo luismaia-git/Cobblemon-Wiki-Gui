@@ -137,6 +137,13 @@ object PokeWikiGui {
                 )
                 .build()
             ,
+            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.POWER_WEIGHT))
+                .setName(Component.literal(lang.evYield))
+                .setLore(
+                    CobblemonUtil.getEVYield(species)
+                )
+                .build()
+            ,
             GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LEVEL_BALL))
                 .setName(Component.literal(lang.movesbylevel))
                 .setLore(
@@ -165,7 +172,7 @@ object PokeWikiGui {
                 )
                 .build()
             ,
-            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.POWER_WEIGHT))
+            GuiHelper.createEmptyButton(ItemStack(CobblemonItems.LUXURY_BALL))
                 .setName(Component.literal(lang.formChangeMoves))
                 .setLore(
                     CobblemonUtil.getFormChangeMoves(species)

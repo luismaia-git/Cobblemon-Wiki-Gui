@@ -86,6 +86,7 @@ class CobblemonWikiGuiLang {
     var eggMoves : String = "Egg Moves"
     var formChangeMoves : String = "Form Changes Moves"
     var abilities : String = "Abilities"
+    var evYield : String = "EV Yield"
     var drops : String = "Drops"
     var eggGroups : String = "Egg Groups"
     var forms : String = "Forms"

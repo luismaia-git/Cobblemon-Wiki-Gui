@@ -278,17 +278,11 @@ object CobblemonUtil {
         val initialString = " §b- §a"
         lore.add(
             Component.translatable("cobblemon.ui.stats.hp").setStyle(lightPurple)
-                .append(
-                    initialString +
-                            (pokemon.baseStats[Stats.HP])
-
-                )
+                .append(initialString + (pokemon.baseStats[Stats.HP]))
         )
         lore.add(
             Component.translatable("cobblemon.ui.stats.atk").setStyle(red)
-                .append(
-                    initialString + (pokemon.baseStats[Stats.ATTACK])
-                )
+                .append(initialString + (pokemon.baseStats[Stats.ATTACK]))
         )
         lore.add(
             Component.translatable("cobblemon.ui.stats.def").setStyle(gold)
@@ -582,11 +576,66 @@ object CobblemonUtil {
     }
 
     fun getAbilities(species: FormData): MutableList<Component> {
-        val payload: MutableList<Component> = ArrayList()
+        val payload: MutableSet<Component> = mutableSetOf()
         species.abilities.forEach {
             payload.add(it.template.displayName.yellow())
         }
-        return payload
+        return payload.toMutableList()
+    }
+
+    fun getEVYield(species: FormData): MutableList<Component> {
+        val lore: MutableList<Component> = ArrayList()
+
+        val initialString = " §b- §a"
+        species.evYield[Stats.HP]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.hp").setStyle(lightPurple)
+                        .append(initialString + it)
+                )
+            }
+        }
+        species.evYield[Stats.ATTACK]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.atk").setStyle(red)
+                        .append(initialString + it)
+                )
+            }
+        }
+        species.evYield[Stats.DEFENCE]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.def").setStyle(gold)
+                        .append(initialString + it)
+                )
+            }
+        }
+        species.evYield[Stats.SPECIAL_ATTACK]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.sp_atk").setStyle(darkPurple)
+                        .append(initialString + it)
+                )
+            }
+        }
+        species.evYield[Stats.SPECIAL_DEFENCE]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.sp_def").setStyle(yellow)
+                        .append(initialString + it)
+                )
+            }
+        }
+        species.evYield[Stats.SPEED]?.let {
+            if (it > 0) {
+                lore.add(
+                    Component.translatable("cobblemon.ui.stats.speed").setStyle(darkAqua)
+                        .append(initialString + it)
+                )
+            }
+        }
+        return lore
     }
 
     private fun getBaseFriendship(species: FormData): MutableComponent {
