@@ -42,8 +42,8 @@ object PokeWikiCommand {
 
         val otherCommand = dispatcher.register(literal(NAME_OTHER)
             .permission(CobblemonWikiGuiPermissions.PWIKIANOTHER)
-            .then(argument(SPECIES, SpeciesArgumentType.species())
-                .then(argument(PLAYER, EntityArgument.player())
+            .then(argument(PLAYER, EntityArgument.player())
+                .then(argument(SPECIES, SpeciesArgumentType.species())
                     .executes { execute(it, it.player(), null) }
                     .then(argument(FORM, FormArgumentType.form())
                         .executes { execute(it, it.player(), it.getArgument(FORM, FormData::class.java)) }))))

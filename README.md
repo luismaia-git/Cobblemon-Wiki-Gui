@@ -50,7 +50,7 @@ Aliases: `/pokewiki`, `/pokemonwiki`, `/cobblemonwiki`, `/cobblewiki`, `/cwiki`
 
 | Permission | Command | Description |
 |------------|---------|--------------|
-| <code>cobblemon_wiki_gui.command.pwikianother</code> | <code>/pwikiother &lt;pokemon&gt; &lt;player&gt; [form]</code> | Open the wiki for a species for the given player. Optional **form** shows that form only. |
+| <code>cobblemon_wiki_gui.command.pwikianother</code> | <code>/pwikiother &lt;player&gt; &lt;pokemon&gt; [form]</code> | Open the wiki for a species for the given player. Optional **form** shows that form only. |
 
 Aliases: `/pokewikiother`, `/pokemonwikiother`, `/cobblemonwikiother`, `/cobblewikiother`, `/cwikiother`
 
