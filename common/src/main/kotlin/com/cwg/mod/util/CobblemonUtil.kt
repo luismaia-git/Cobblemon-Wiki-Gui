@@ -672,8 +672,13 @@ object CobblemonUtil {
 
     fun getForms(form: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
-        form.species.forms.forEach{
-            payload.add(it.name.yellow())
+        if (form.name != form.species.standardForm.name) {
+            val formDisplayName = form.name.replaceFirstChar { it.uppercase() }
+            payload.add(formDisplayName.yellow())
+        } else {
+            form.species.forms.forEach {
+                payload.add(it.name.yellow())
+            }
         }
         return payload
     }

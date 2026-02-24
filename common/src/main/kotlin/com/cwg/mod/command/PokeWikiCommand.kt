@@ -2,6 +2,7 @@ package com.cwg.mod.command
 
 import com.cobblemon.mod.common.command.argument.FormArgumentType
 import com.cobblemon.mod.common.command.argument.SpeciesArgumentType
+import com.cobblemon.mod.common.pokemon.FormData
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
 import com.cwg.mod.gui.PokeWikiGui
 import com.cwg.mod.util.alias
@@ -28,37 +29,31 @@ object PokeWikiCommand {
     val ALIASES_OTHER : List<String> = ALIASES.map { "${it}other" }
 
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
-        // Comando para si mesmo
         val selfCommand = dispatcher.register(literal(NAME)
             .permission(CobblemonWikiGuiPermissions.PWIKI)
             .then(argument(SPECIES, SpeciesArgumentType.species())
-                // Executa sem forma especificada
                 .executes { execute(it, it.source.playerOrException, null) }
-                // Ou com forma especificada (opcional)
                 .then(argument(FORM, FormArgumentType.form())
-                    .executes { execute(it, it.source.playerOrException, it.form()) })))
+                    .executes { execute(it, it.source.playerOrException, it.getArgument(FORM, FormData::class.java)) })))
 
         for (alias: String in ALIASES) {
             dispatcher.register(selfCommand.alias(alias))
         }
 
-        // Comando para outro jogador
         val otherCommand = dispatcher.register(literal(NAME_OTHER)
             .permission(CobblemonWikiGuiPermissions.PWIKIANOTHER)
-            .then(argument(SPECIES, SpeciesArgumentType.species())
-                .then(argument(PLAYER, EntityArgument.player())
-                    // Executa sem forma especificada
+            .then(argument(PLAYER, EntityArgument.player())
+                .then(argument(SPECIES, SpeciesArgumentType.species())
                     .executes { execute(it, it.player(), null) }
-                    // Ou com forma especificada (opcional)
                     .then(argument(FORM, FormArgumentType.form())
-                        .executes { execute(it, it.player(), it.form()) }))))
+                        .executes { execute(it, it.player(), it.getArgument(FORM, FormData::class.java)) }))))
 
         for (alias: String in ALIASES_OTHER) {
             dispatcher.register(otherCommand.alias(alias))
         }
     }
 
-    fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer, formName: String?): Int {
+    fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer, formDataArg: FormData?): Int {
         try {
             val pokemonSpecies = SpeciesArgumentType.getPokemon(context, SPECIES)
 
@@ -67,14 +62,9 @@ object PokeWikiCommand {
                 return 0
             }
 
-            val species = if (formName != null) {
-                val form = pokemonSpecies.getFormByName(formName)
-                form
-            } else {
-                pokemonSpecies.standardForm
-            }
+            val formData = formDataArg ?: pokemonSpecies.standardForm
 
-            PokeWikiGui.open(species, player)
+            PokeWikiGui.open(formData, player)
 
             return Command.SINGLE_SUCCESS
         } catch (e: Exception) {
@@ -84,15 +74,6 @@ object PokeWikiCommand {
         }
     }
 
-    private fun CommandContext<CommandSourceStack>.form(): String? {
-        return try {
-            getArgument(FORM, String::class.java)
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    // Função auxiliar para obter o jogador do contexto
     private fun CommandContext<CommandSourceStack>.player(): ServerPlayer {
         return EntityArgument.getPlayer(this, PLAYER)
     }

@@ -25,8 +25,8 @@
   "cobblemon_wiki_gui.wiki.resistant": "Resistant against:",
   "cobblemon_wiki_gui.wiki.immune": "Immune against:",
   "cobblemon_wiki_gui.wiki.poke.info": "Click to get more info",
-  "cobblemon_wiki_gui.command.pokewiki.error.notplayer" : "This command must be ran by a player."
-
+  "cobblemon_wiki_gui.command.pokewiki.error.notplayer" : "This command must be ran by a player.",
+  "cobblemon_wiki_gui.command.form_not_found": "Form '%1$s' not found for %2$s."
 
 
 }

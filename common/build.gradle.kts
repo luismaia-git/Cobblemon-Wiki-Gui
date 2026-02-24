@@ -34,6 +34,13 @@ dependencies {
 
     modCompileOnly(libs.cobblemon)
 
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 
@@ -49,5 +56,9 @@ sourceSets {
                 property("timestamp", OffsetDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss")) + " UTC")
             }
         }
+    }
+    test {
+        kotlin.srcDir("src/test/kotlin")
+        resources.srcDir("src/test/resources")
     }
 }
