@@ -48,7 +48,6 @@ object EvolutionsGui {
                 .build()
             gui.setSlot(13, noEvolutionButton)
         } else {
-            // Criar botões de todas as evoluções
             evolutions.forEach { evolution ->
                 val pokemonSpecies = evolution.result.species?.let {
                     try {
@@ -59,12 +58,13 @@ object EvolutionsGui {
                 }
 
                 if (pokemonSpecies != null) {
+                    val evolutionForm = pokemonSpecies.getFormByName(species.name) ?: pokemonSpecies.standardForm
                     val loreRequirements = CobblemonUtil.getRequirementsToWikiGui(evolution)
-                    val button = GuiHelper.createPokemonButton(pokemonSpecies.standardForm)
+                    val button = GuiHelper.createPokemonButton(evolutionForm)
                         .setLore(loreRequirements)
                         .setCallback { _, _, _, gui ->
                             gui.close()
-                            PokeWikiGui.open(pokemonSpecies.standardForm, gui.player)
+                            PokeWikiGui.open(evolutionForm, gui.player)
                         }
                         .build()
                     evolutionButtons.add(button)

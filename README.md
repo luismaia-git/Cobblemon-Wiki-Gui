@@ -36,22 +36,23 @@ The Cobblemon wiki gui allows you to view:
 ![Effectiviness](https://cdn.modrinth.com/data/cached_images/bda479d09584c4e95ed619c921a9941d1c53a259.png)
 
 
-#### Commands:
-##### Permission: <code>cobblemon_wiki_gui.command.pwiki</code>
-- /pwiki < pokemon >
-- (alias) /pokewiki < pokemon >
-- (alias) /pokemonwiki < pokemon >
-- (alias) /cobblemonwiki < pokemon >
-- (alias) /cobblewiki < pokemon >
-- (alias) /cwiki < pokemon >
+#### Commands
 
-##### Permission: <code>cobblemon_wiki_gui.command.pwikianother</code>
-- /pwikiother < pokemon > < player >
-- (alias) /pokewikiother < pokemon > < player >
-- (alias) /pokemonwikiother < pokemon > < player >
-- (alias) /cobblemonwikiother < pokemon > < player >
-- (alias) /cobblewikiother < pokemon > < player >
-- (alias) /cwikiother < pokemon > < player >
+**PokeWiki** — Opens the Pokémon wiki GUI for the executor.
+
+| Permission | Command | Description |
+|------------|---------|--------------|
+| <code>cobblemon_wiki_gui.command.pwiki</code> | <code>/pwiki &lt;pokemon&gt; [form]</code> | Open the wiki for a species. Optional **form** shows that form only (e.g. <code>/pwiki zorua hisui</code>). |
+
+Aliases: `/pokewiki`, `/pokemonwiki`, `/cobblemonwiki`, `/cobblewiki`, `/cwiki`
+
+**PokeWiki (other player)** — Opens the Pokémon wiki GUI for another player.
+
+| Permission | Command | Description |
+|------------|---------|--------------|
+| <code>cobblemon_wiki_gui.command.pwikianother</code> | <code>/pwikiother &lt;pokemon&gt; &lt;player&gt; [form]</code> | Open the wiki for a species for the given player. Optional **form** shows that form only. |
+
+Aliases: `/pokewikiother`, `/pokemonwikiother`, `/cobblemonwikiother`, `/cobblewikiother`, `/cwikiother`
 
 ##### Permission: <code>cobblemon_wiki_gui.command.cwgreload</code>
 - /cwg reload

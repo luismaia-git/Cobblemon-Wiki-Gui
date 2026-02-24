@@ -15,7 +15,7 @@ class CobblemonWikiGuiLang {
             for ((key, value) in map) {
                 try {
                     val field = config.javaClass.getDeclaredField(key)
-                    field.isAccessible = true // Permite acesso a campos privados, se houver
+                    field.isAccessible = true
                     field.set(config, value)
                 } catch (e: NoSuchFieldException) {
                     System.err.println("Campo '$key' não encontrado em CobblemonWikiGuiLang.")
@@ -100,13 +100,12 @@ class CobblemonWikiGuiLang {
     var noDrops: String = "No Drops"
 
 
-    // Novo método para converter a instância em um mapa de strings
     fun toMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()
         this.javaClass.declaredFields.forEach { field ->
-            // Garante que não é um campo estático como GSON ou companion object
+            // Skip static fields (e.g. GSON, companion object)
             if (!java.lang.reflect.Modifier.isStatic(field.modifiers)) {
-                field.isAccessible = true // Permite acesso a campos privados
+                field.isAccessible = true
                 map[field.name] = field.get(this)?.toString() ?: ""
             }
         }
