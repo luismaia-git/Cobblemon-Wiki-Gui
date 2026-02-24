@@ -50,12 +50,15 @@ Aliases: `/pokewiki`, `/pokemonwiki`, `/cobblemonwiki`, `/cobblewiki`, `/cwiki`
 
 | Permission | Command | Description |
 |------------|---------|--------------|
-| <code>cobblemon_wiki_gui.command.pwikianother</code> | <code>/pwikiother &lt;player&gt; &lt;pokemon&gt; [form]</code> | Open the wiki for a species for the given player. Optional **form** shows that form only. |
+| <code>cobblemon_wiki_gui.command.pwikianother</code> | <code>/pwikiother &lt;player&gt; &lt;pokemon&gt; [form]</code> | Open the wiki for a species for the given player. Optional **form** shows that form only (e.g. <code>/pwikiother Steve zorua hisui</code>). |
 
 Aliases: `/pokewikiother`, `/pokemonwikiother`, `/cobblemonwikiother`, `/cobblewikiother`, `/cwikiother`
 
-##### Permission: <code>cobblemon_wiki_gui.command.cwgreload</code>
-- /cwg reload
+**Reload** — Reloads the configuration files in-game.
+
+| Permission | Command | Description |
+|------------|---------|--------------|
+| <code>cobblemon_wiki_gui.command.cwgreload</code> | <code>/cwg reload</code> | Reloads the lang.json configuration file without restarting. |
 
 ### Default Configuration File
 The lang.json file, located under config/cobblemon_wiki_gui, contains the following default settings:
@@ -131,8 +134,9 @@ A: The CobblemonWikiGui adds an interface that allows you to view Pokémon infor
 
 #### Q: Is it possible to open the Pokemon Wiki gui by command?
 
-A: Yes, just type /pokewiki <pokemon>
-A: You can also open the gui for a specific player with : /pokewikiother <pokemon> <player>
+A: Yes, just type `/pokewiki <pokemon>` or `/pokewiki <pokemon> <form>` to open a specific form (e.g. `/pokewiki zorua hisui`).
+
+A: You can also open the gui for another player with: `/pokewikiother <player> <pokemon>` or `/pokewikiother <player> <pokemon> [form]`.
 
 #### Q: Is it possible to customize the configuration files?
 
