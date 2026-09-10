@@ -50,7 +50,7 @@ object SpawnConditionGui {
 
 
             val button = GuiElementBuilder(PokemonItem.from(species.species))
-                .setName(Component.literal("§a${species.species.name} §b[§e${s.bucket.name}§b]"))
+                .setName(Component.literal("§a${species.species.name} §b[§e${s.bucket}§b]"))
                 .setLore(lore)
                 .build()
             spawnConditionButtons.add(button)
