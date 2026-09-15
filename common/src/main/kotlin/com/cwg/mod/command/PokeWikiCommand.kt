@@ -3,7 +3,9 @@ package com.cwg.mod.command
 import com.cobblemon.mod.common.command.argument.FormArgumentType
 import com.cobblemon.mod.common.command.argument.SpeciesArgumentType
 import com.cobblemon.mod.common.pokemon.FormData
+import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
+import com.cwg.mod.gui.PokedexGui
 import com.cwg.mod.gui.PokeWikiGui
 import com.cwg.mod.util.alias
 import com.cwg.mod.util.permission
@@ -31,6 +33,7 @@ object PokeWikiCommand {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val selfCommand = dispatcher.register(literal(NAME)
             .permission(CobblemonWikiGuiPermissions.PWIKI)
+            .executes { executeBrowser(it) }
             .then(argument(SPECIES, SpeciesArgumentType.species())
                 .executes { execute(it, it.source.playerOrException, null) }
                 .then(argument(FORM, FormArgumentType.form())
@@ -53,6 +56,17 @@ object PokeWikiCommand {
         }
     }
 
+    fun executeBrowser(context: CommandContext<CommandSourceStack>): Int {
+        try {
+            PokedexGui.open(context.source.playerOrException)
+            return Command.SINGLE_SUCCESS
+        } catch (e: Exception) {
+            context.source.sendFailure(Component.literal("An internal error occurred. Check logs for details."))
+            CobblemonWikiGui.LOGGER.error("Failed to open Pokedex browser GUI", e)
+            return 0
+        }
+    }
+
     fun execute(context: CommandContext<CommandSourceStack>, player: ServerPlayer, formDataArg: FormData?): Int {
         try {
             val pokemonSpecies = SpeciesArgumentType.getPokemon(context, SPECIES)
@@ -69,7 +83,7 @@ object PokeWikiCommand {
             return Command.SINGLE_SUCCESS
         } catch (e: Exception) {
             context.source.sendFailure(Component.literal("An internal error occurred. Check logs for details."))
-            e.printStackTrace()
+            CobblemonWikiGui.LOGGER.error("Failed to open PokeWiki GUI", e)
             return 0
         }
     }

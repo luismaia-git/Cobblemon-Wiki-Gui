@@ -59,6 +59,7 @@ class CobblemonWikiGuiLang {
     //var moonPhase: String = "Need Moon phase: %s"
     var structureCondition: String = "Need structure: %s"
     var structureAntiCondition: String = "Blacklisted structure: %s"
+    var moonPhaseRequirement: String = "Moon Phase: %s"
     //var properties: String = "Need: %s"
     //var defeatSpecific: String = "Need to defeat %s %s times"
 
@@ -100,6 +101,48 @@ class CobblemonWikiGuiLang {
 
     var noDrops: String = "No Drops"
 
+    var pokedexTitle: String = "Pokédex"
+    var spawnConditionsTitle: String = "Spawn Conditions"
+    var evolutionsTitle: String = "Cobblemon Wiki - Evolutions"
+    var conditionsLabel: String = "Conditions: "
+    var antiConditionsLabel: String = "Anti-Conditions: "
+    var timeLabel: String = "Time: "
+    var currentPage: String = "Current page %s/%s"
+
+    var biomesLabel: String = "Biomes"
+    var moonPhaseLabel: String = "Moon Phase"
+    var canSeeSkyLabel: String = "Can See Sky"
+    var areaLabel: String = "Area"
+    var lightLabel: String = "Light"
+    var skyLightLabel: String = "Sky Light"
+    var rainingLabel: String = "Raining"
+    var thunderingLabel: String = "Thundering"
+    var slimeChunkLabel: String = "Slime Chunk"
+    var structuresLabel: String = "Structures"
+    var markersLabel: String = "Markers"
+    var fluidTag: String = "Fluid"
+    var itemTag: String = "Item"
+    var structureTag: String = "Structure"
+
+    var cycleAnyTime: String = "Any time"
+    var cycleDay: String = "Day"
+    var cycleNight: String = "Night"
+    var cycleNoon: String = "Noon"
+    var cycleMidnight: String = "Midnight"
+    var cycleDawn: String = "Dawn"
+    var cycleDusk: String = "Dusk"
+    var cycleTwilight: String = "Twilight"
+    var cycleMorning: String = "Morning"
+    var cycleAfternoon: String = "Afternoon"
+
+    var moonPhaseFullMoon: String = "Full Moon"
+    var moonPhaseWaningGibbous: String = "Waning Gibbous"
+    var moonPhaseThirdQuarter: String = "Third Quarter"
+    var moonPhaseWaningCrescent: String = "Waning Crescent"
+    var moonPhaseNewMoon: String = "New Moon"
+    var moonPhaseWaxingCrescent: String = "Waxing Crescent"
+    var moonPhaseFirstQuarter: String = "First Quarter"
+    var moonPhaseWaxingGibbous: String = "Waxing Gibbous"
 
     fun toMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()

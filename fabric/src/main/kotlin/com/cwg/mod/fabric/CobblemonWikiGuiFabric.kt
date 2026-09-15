@@ -49,6 +49,11 @@ object CobblemonWikiGuiFabric : CobblemonWikiGuiImplementation {
 
     override fun isModInstalled(id: String) = FabricLoader.getInstance().isModLoaded(id)
 
+    override fun modVersion(): String =
+        FabricLoader.getInstance().getModContainer(CobblemonWikiGui.MOD_ID)
+            .map { it.metadata.version.friendlyString }
+            .orElse("unknown")
+
     override fun environment(): Environment {
         return when(FabricLoader.getInstance().environmentType) {
             EnvType.CLIENT -> Environment.CLIENT

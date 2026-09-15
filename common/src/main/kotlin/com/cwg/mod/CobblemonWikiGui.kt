@@ -25,7 +25,6 @@ object CobblemonWikiGui {
 
     const val MOD_ID: String = "cobblemon_wiki_gui"
     const val MOD_NAME: String = "Cobblemon Wiki Gui"
-    const val VERSION: String = "2.0.1"
     const val CONFIG_PATH = "config/$MOD_ID/main.json"
     const val CONFIG_LANG_PATH = "config/$MOD_ID/lang.json"
 
@@ -52,7 +51,7 @@ object CobblemonWikiGui {
             String.format(
                 "%s v%s loaded! This mod was made by LuisMaia. https://github.com/luismaia-git",
                 MOD_NAME,
-                VERSION
+                implementation.modVersion()
             )
         )
 
@@ -95,13 +94,12 @@ object CobblemonWikiGui {
         // Check config existence and load if it exists, otherwise create default.
         if (configFile.exists()) {
             try {
-                val fileReader = FileReader(configFile)
-                this.config = CobblemonWikiGuiConfig.GSON.fromJson(fileReader, CobblemonWikiGuiConfig::class.java)
-                fileReader.close()
+                FileReader(configFile).use { fileReader ->
+                    this.config = CobblemonWikiGuiConfig.GSON.fromJson(fileReader, CobblemonWikiGuiConfig::class.java)
+                }
             } catch (exception: Exception) {
-                LOGGER.error("Failed to load the config! Using default config until the following has been addressed:")
+                LOGGER.error("Failed to load the config! Using default config until the following has been addressed:", exception)
                 this.config = CobblemonWikiGuiConfig()
-                exception.printStackTrace()
             }
 
         } else {
@@ -112,14 +110,13 @@ object CobblemonWikiGui {
     fun saveConfig(config: CobblemonWikiGuiConfig) {
         try {
             val configFile = File(CONFIG_PATH)
-            val fileWriter = FileWriter(configFile)
-            // Put the config to json then flush the writer to commence writing.
-            CobblemonWikiGuiConfig.GSON.toJson(config, fileWriter)
-            fileWriter.flush()
-            fileWriter.close()
+            FileWriter(configFile).use { fileWriter ->
+                // Put the config to json then flush the writer to commence writing.
+                CobblemonWikiGuiConfig.GSON.toJson(config, fileWriter)
+                fileWriter.flush()
+            }
         } catch (exception: Exception) {
-            LOGGER.error("Failed to save the config! Please consult the following stack trace:")
-            exception.printStackTrace()
+            LOGGER.error("Failed to save the config! Please consult the following stack trace:", exception)
         }
     }
 
@@ -132,13 +129,12 @@ object CobblemonWikiGui {
         // Check config existence and load if it exists, otherwise create default.
         if (configFile.exists()) {
             try {
-                val fileReader = FileReader(configFile)
-                this.langConfig = CobblemonWikiGuiLang.GSON.fromJson(fileReader, CobblemonWikiGuiLang::class.java)
-                fileReader.close()
+                FileReader(configFile).use { fileReader ->
+                    this.langConfig = CobblemonWikiGuiLang.GSON.fromJson(fileReader, CobblemonWikiGuiLang::class.java)
+                }
             } catch (exception: Exception) {
-                LOGGER.error("Failed to load the lang config! Using default config until the following has been addressed:")
+                LOGGER.error("Failed to load the lang config! Using default config until the following has been addressed:", exception)
                 this.langConfig = CobblemonWikiGuiLang()
-                exception.printStackTrace()
             }
 
         } else {
@@ -149,14 +145,13 @@ object CobblemonWikiGui {
     fun saveLangConfig(config: CobblemonWikiGuiLang) {
         try {
             val configFile = File(CONFIG_LANG_PATH)
-            val fileWriter = FileWriter(configFile)
-            // Put the config to json then flush the writer to commence writing.
-            CobblemonWikiGuiLang.GSON.toJson(config, fileWriter)
-            fileWriter.flush()
-            fileWriter.close()
+            FileWriter(configFile).use { fileWriter ->
+                // Put the config to json then flush the writer to commence writing.
+                CobblemonWikiGuiLang.GSON.toJson(config, fileWriter)
+                fileWriter.flush()
+            }
         } catch (exception: Exception) {
-            LOGGER.error("Failed to save the lang config! Please consult the following stack trace:")
-            exception.printStackTrace()
+            LOGGER.error("Failed to save the lang config! Please consult the following stack trace:", exception)
         }
     }
 

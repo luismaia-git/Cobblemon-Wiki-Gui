@@ -1,7 +1,10 @@
 package com.cwg.mod.helper
 
+import com.cobblemon.mod.common.api.text.text
+import com.cobblemon.mod.common.api.text.yellow
 import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.FormData
+import com.cwg.mod.CobblemonWikiGui
 import eu.pb4.sgui.api.elements.GuiElement
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
@@ -9,6 +12,7 @@ import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
 object GuiHelper {
@@ -31,7 +35,7 @@ object GuiHelper {
                         gui.setSlot(index,guiElement )
                     }
                 } else {
-                    println("Valores fora dos limites permitidos.")
+                    CobblemonWikiGui.LOGGER.warn("GuiHelper.setLine: values out of allowed bounds (HORIZONTAL row=$rowOrColumnPos, start=$startIndex, end=$endIndex)")
                 }
             }
             LineType.VERTICAL -> {
@@ -41,7 +45,7 @@ object GuiHelper {
                         gui.setSlot(index,guiElement )
                     }
                 } else {
-                    println("Valores fora dos limites permitidos.")
+                    CobblemonWikiGui.LOGGER.warn("GuiHelper.setLine: values out of allowed bounds (VERTICAL col=$rowOrColumnPos, start=$startIndex, end=$endIndex)")
                 }
             }
         }
@@ -60,6 +64,63 @@ object GuiHelper {
         return GuiElementBuilder(pokemonItem).setName(displayName)
     }
 
+    /**
+     * Lays out a page of [items] into [contentSpace], and wires prev/next arrows + a page
+     * indicator when there's more than one page. [navigate] is called with the target page
+     * index; callers are expected to close [gui] and reopen with that page.
+     *
+     * Shared by EvolutionsGui and SpawnConditionGui so their pagination can't drift apart.
+     */
+    fun paginate(
+        gui: SimpleGui,
+        items: List<GuiElement>,
+        page: Int,
+        contentSpace: Array<Int>,
+        prevSlot: Int,
+        nextSlot: Int,
+        indicatorSlot: Int,
+        currentPageLabel: String,
+        navigate: (Int) -> kotlin.Unit
+    ) {
+        val itemsPerPage = contentSpace.size
+        val totalPages = (items.size + itemsPerPage - 1) / itemsPerPage
+        val currentPage = page.coerceIn(0, maxOf(0, totalPages - 1))
+        val startIndex = currentPage * itemsPerPage
+        val endIndex = minOf(startIndex + itemsPerPage, items.size)
+
+        for (i in startIndex until endIndex) {
+            gui.setSlot(contentSpace[i - startIndex], items[i])
+        }
+
+        if (currentPage > 0) {
+            gui.setSlot(
+                prevSlot,
+                createEmptyButton(Items.ARROW.defaultInstance)
+                    .setName(Component.literal("←").yellow())
+                    .setCallback { _, _, _, sgui -> sgui.close(); navigate(currentPage - 1) }
+                    .build()
+            )
+        }
+
+        if (currentPage < totalPages - 1) {
+            gui.setSlot(
+                nextSlot,
+                createEmptyButton(Items.ARROW.defaultInstance)
+                    .setName(Component.literal("→").yellow())
+                    .setCallback { _, _, _, sgui -> sgui.close(); navigate(currentPage + 1) }
+                    .build()
+            )
+        }
+
+        if (totalPages > 1) {
+            gui.setSlot(
+                indicatorSlot,
+                createEmptyButton(Items.BOOK.defaultInstance)
+                    .setName(currentPageLabel.format(currentPage + 1, totalPages).text().yellow())
+                    .build()
+            )
+        }
+    }
 
 }
 

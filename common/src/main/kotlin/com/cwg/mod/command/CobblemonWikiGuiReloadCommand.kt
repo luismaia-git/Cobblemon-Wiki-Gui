@@ -2,6 +2,7 @@ package com.cwg.mod.command
 
 import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
+import com.cwg.mod.util.SpawnInfoFormatter
 import com.cwg.mod.util.permission
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
@@ -27,9 +28,11 @@ object CobblemonWikiGuiReloadCommand {
     fun execute(context: CommandContext<CommandSourceStack>): Int {
         try {
             CobblemonWikiGui.reloadConfig()
+            SpawnInfoFormatter.invalidateSpawnPoolCache()
             context.source.sendSystemMessage(Component.literal("Reloaded config"))
             return Command.SINGLE_SUCCESS
         } catch (e: Exception) {
+            CobblemonWikiGui.LOGGER.error("Failed to reload config", e)
             context.source.sendFailure(Component.literal("An internal error occurred. Check logs for details."))
             return 0
         }
