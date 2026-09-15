@@ -54,6 +54,12 @@ Aliases: `/pokewiki`, `/pokemonwiki`, `/cobblemonwiki`, `/cobblewiki`, `/cwiki`
 
 Aliases: `/pokewikiother`, `/pokemonwikiother`, `/cobblemonwikiother`, `/cobblewikiother`, `/cwikiother`
 
+**PWikiDex** — Opens a paginated browser of every implemented Pokémon species, so players can jump into the wiki without already knowing a species' name. Off by default (see permission) since it lists everything regardless of what the player has encountered.
+
+| Permission | Command | Description |
+|------------|---------|--------------|
+| <code>cobblemon_wiki_gui.command.pwikidex</code> | <code>/pwikidex</code> | Opens the species browser. |
+
 **Reload** — Reloads the configuration files in-game.
 
 | Permission | Command | Description |
