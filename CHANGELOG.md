@@ -2,7 +2,7 @@
 
 ## 2.6.0
 
-**Compatible with Cobblemon 1.8.0 "Make Your Move"**
+**Compatible with Cobblemon 1.8.1 "Make Your Move"**
 
 ### ✨ New
 - **`/pwikidex`** — a paginated browser listing every implemented Pokémon. Don't know the exact name? No problem, flip through the whole dex right in-game. *(own permission node — server owners decide who gets it)*
