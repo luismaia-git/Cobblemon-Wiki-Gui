@@ -321,6 +321,14 @@ object CobblemonUtil {
         return payload
     }
 
+    fun getRideable(formData: FormData): MutableList<Component> {
+        val payload: MutableList<Component> = ArrayList()
+        val riding = formData.species.riding
+        val isRideable = riding.seats.isNotEmpty() || !riding.behaviours.isNullOrEmpty()
+        payload.add((if (isRideable) "Yes" else "Not").yellow())
+        return payload
+    }
+
     fun getForms(form: FormData): MutableList<Component> {
         val payload: MutableList<Component> = ArrayList()
         if (form.name != form.species.standardForm.name) {

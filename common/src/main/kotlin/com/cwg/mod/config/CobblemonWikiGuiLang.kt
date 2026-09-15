@@ -92,6 +92,7 @@ class CobblemonWikiGuiLang {
     var eggGroups : String = "Egg Groups"
     var forms : String = "Forms"
     var dynamax : String = "Dynamax"
+    var rideable : String = "Rideable"
     //var baseExpYield : String = "Base Exp Yield"
     var baseFriendship: String = "Friendship"
     var weakness : String = "Is weak against:"
