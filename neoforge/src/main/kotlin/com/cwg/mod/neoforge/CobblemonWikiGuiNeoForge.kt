@@ -103,6 +103,11 @@ class CobblemonWikiGuiNeoForge : CobblemonWikiGuiImplementation {
 
     override fun isModInstalled(id: String) = ModList.get().isLoaded(id)
 
+    override fun modVersion(): String =
+        ModList.get().getModContainerById(CobblemonWikiGui.MOD_ID)
+            .map { it.modInfo.version.toString() }
+            .orElse("unknown")
+
     override fun environment(): Environment {
         return if (FMLEnvironment.dist.isClient) Environment.CLIENT else Environment.SERVER
     }

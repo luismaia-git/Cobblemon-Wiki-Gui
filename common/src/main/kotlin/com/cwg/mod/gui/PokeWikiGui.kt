@@ -209,6 +209,13 @@ object PokeWikiGui {
                 )
                 .build()
             ,
+            GuiHelper.createEmptyButton(ItemStack(Items.SADDLE))
+                .setName(Component.literal(lang.rideable))
+                .setLore(
+                    CobblemonUtil.getRideable(species)
+                )
+                .build()
+            ,
             GuiHelper.createEmptyButton(ItemStack(Items.BONE))
                 .setName(Component.literal(lang.drops))
                 .setLore(

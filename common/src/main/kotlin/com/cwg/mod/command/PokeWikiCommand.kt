@@ -3,6 +3,7 @@ package com.cwg.mod.command
 import com.cobblemon.mod.common.command.argument.FormArgumentType
 import com.cobblemon.mod.common.command.argument.SpeciesArgumentType
 import com.cobblemon.mod.common.pokemon.FormData
+import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
 import com.cwg.mod.gui.PokeWikiGui
 import com.cwg.mod.util.alias
@@ -69,7 +70,7 @@ object PokeWikiCommand {
             return Command.SINGLE_SUCCESS
         } catch (e: Exception) {
             context.source.sendFailure(Component.literal("An internal error occurred. Check logs for details."))
-            e.printStackTrace()
+            CobblemonWikiGui.LOGGER.error("Failed to open PokeWiki GUI", e)
             return 0
         }
     }

@@ -17,6 +17,8 @@ interface CobblemonWikiGuiImplementation {
 
     fun isModInstalled(id: String): Boolean
 
+    fun modVersion(): String
+
     fun registerPermissionValidator()
 
     fun <A : ArgumentType<*>, T : ArgumentTypeInfo.Template<A>> registerCommandArgument(identifier: ResourceLocation, argumentClass: KClass<A>, serializer: ArgumentTypeInfo<A, T>)

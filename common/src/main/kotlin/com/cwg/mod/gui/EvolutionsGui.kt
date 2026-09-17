@@ -25,13 +25,11 @@ object EvolutionsGui {
         19, 20, 21, 22, 23, 24, 25,
     )
 
-    private const val ITEMS_PER_PAGE = 14
-
     fun open(species: FormData, player: ServerPlayer, page: Int = 0): SimpleGui {
         val gui = SimpleGui(MenuType.GENERIC_9x4, player, false)
         val redPane = GuiHelper.RED_PANE
 
-        gui.title = Component.literal("Cobblemon Wiki - Evolutions").red()
+        gui.title = Component.literal(lang.evolutionsTitle).red()
 
         val evolutions = species.evolutions
         val evolutionButtons: MutableList<GuiElement> = mutableListOf()
@@ -72,47 +70,11 @@ object EvolutionsGui {
             }
 
 
-            val totalPages = (evolutionButtons.size + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
-            val currentPage = page.coerceIn(0, maxOf(0, totalPages - 1))
-            val startIndex = currentPage * ITEMS_PER_PAGE
-            val endIndex = minOf(startIndex + ITEMS_PER_PAGE, evolutionButtons.size)
-
-            for (i in startIndex until endIndex) {
-                val slotIndex = CONTENT_SPACE[i - startIndex]
-                gui.setSlot(slotIndex, evolutionButtons[i])
-            }
-
-            if (currentPage > 0) {
-                val prevButton = GuiHelper
-                    .createEmptyButton(Items.ARROW.defaultInstance)
-                    .setName(Component.literal("←").yellow())
-                    .setCallback { _, _, _, gui ->
-                        gui.close()
-                        open(species, gui.player, currentPage - 1)
-                    }
-                    .build()
-                gui.setSlot(18, prevButton)
-            }
-
-            if (currentPage < totalPages - 1) {
-                val nextButton = GuiHelper
-                    .createEmptyButton(Items.ARROW.defaultInstance)
-                    .setName(Component.literal("→").yellow())
-                    .setCallback { _, _, _, gui ->
-                        gui.close()
-                        open(species, gui.player, currentPage + 1)
-                    }
-                    .build()
-                gui.setSlot(26, nextButton)
-            }
-
-            if (totalPages > 1) {
-                val pageIndicator = GuiHelper
-                    .createEmptyButton(Items.BOOK.defaultInstance)
-                    .setName(Component.literal("Current page ${currentPage + 1}/${totalPages}").yellow())
-                    .build()
-                gui.setSlot(22, pageIndicator)
-            }
+            GuiHelper.paginate(
+                gui, evolutionButtons, page, CONTENT_SPACE,
+                prevSlot = 18, nextSlot = 26, indicatorSlot = 22,
+                currentPageLabel = lang.currentPage
+            ) { newPage -> open(species, player, newPage) }
         }
 
         val backButton = GuiHelper

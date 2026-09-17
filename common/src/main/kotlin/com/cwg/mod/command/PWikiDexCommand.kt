@@ -2,40 +2,40 @@ package com.cwg.mod.command
 
 import com.cwg.mod.CobblemonWikiGui
 import com.cwg.mod.api.permission.CobblemonWikiGuiPermissions
-import com.cwg.mod.util.SpawnInfoFormatter
+import com.cwg.mod.gui.PokedexGui
 import com.cwg.mod.util.permission
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
-import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
 import net.minecraft.network.chat.Component
 
-object CobblemonWikiGuiReloadCommand {
+/**
+ * Opens the paginated species browser (see [PokedexGui]). Kept as its own command - and its own
+ * permission node - rather than a `/pwiki` no-arg branch, for two reasons: Brigadier permissions
+ * apply per command node (so a `/pwiki` no-arg branch couldn't have its own gate separate from
+ * `/pwiki <species>`), and the name deliberately avoids "pokedex"/"dex" alone since Cobblemon
+ * already registers its own `/pokedex` admin command.
+ */
+object PWikiDexCommand {
 
-    private const val NAME = "cwg"
-    private const val RELOAD = "reload"
+    private const val NAME = "pwikidex"
+
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(literal(NAME)
-            .permission(CobblemonWikiGuiPermissions.RELOAD)
-            .then(argument(RELOAD, StringArgumentType.string())
-                .executes { it -> execute(it) }))
-
+            .permission(CobblemonWikiGuiPermissions.PWIKIDEX)
+            .executes(::execute))
     }
 
     fun execute(context: CommandContext<CommandSourceStack>): Int {
         try {
-            CobblemonWikiGui.reloadConfig()
-            SpawnInfoFormatter.invalidateSpawnPoolCache()
-            context.source.sendSystemMessage(Component.literal("Reloaded config"))
+            PokedexGui.open(context.source.playerOrException)
             return Command.SINGLE_SUCCESS
         } catch (e: Exception) {
-            CobblemonWikiGui.LOGGER.error("Failed to reload config", e)
             context.source.sendFailure(Component.literal("An internal error occurred. Check logs for details."))
+            CobblemonWikiGui.LOGGER.error("Failed to open PWikiDex browser GUI", e)
             return 0
         }
     }
-
 }

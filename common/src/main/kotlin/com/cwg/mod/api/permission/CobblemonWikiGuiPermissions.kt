@@ -14,6 +14,9 @@ object CobblemonWikiGuiPermissions {
     @JvmStatic
     val PWIKIANOTHER = this.create("${COMMAND_PREFIX}pwikianother", PermissionLevel.ALL_COMMANDS)
 
+    @JvmStatic
+    val PWIKIDEX = this.create("${COMMAND_PREFIX}pwikidex", PermissionLevel.ALL_COMMANDS)
+
     fun all(): Iterable<Permission> = this.permissions
 
     private fun create(node: String, level: PermissionLevel): Permission {

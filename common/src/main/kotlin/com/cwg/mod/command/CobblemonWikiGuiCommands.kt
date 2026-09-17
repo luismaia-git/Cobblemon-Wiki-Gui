@@ -9,6 +9,7 @@ import net.minecraft.commands.Commands
 object CobblemonWikiGuiCommands {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>, registry: CommandBuildContext, selection: Commands.CommandSelection) {
         PokeWikiCommand.register(dispatcher)
+        PWikiDexCommand.register(dispatcher)
         CobblemonWikiGuiReloadCommand.register(dispatcher)
         TestCommand.register(dispatcher)
     }
