@@ -1,6 +1,5 @@
 package com.cwg.mod.util
 import com.cobblemon.mod.common.api.types.ElementalType
-import com.cwg.mod.CobblemonWikiGui
 
 /*
 * Author: rafacasari
@@ -146,65 +145,40 @@ object TypeChart {
     )
 
 
-    fun getImmunity(source: ElementalType, target: Any): Boolean {
-        val sourceType: String = getFormatedName(source.name)
-        val targetTyping: Any = when (target) {
-            is String -> target
-            is ElementalType -> getFormatedName(target.name)
-            is Iterable<*> -> target.map { value -> if(value is ElementalType) getFormatedName(value.name) else value }.toList()
-            else -> {
-                target
-            }
-        }
-
-        if (targetTyping is List<*>) {
-            for (type in targetTyping) {
-                if (!getImmunity(source, type as String)) return false
-            }
-            return true
-        }
-
-        val typeData = types[targetTyping as String]
-        return typeData?.damageTaken?.get(sourceType) != 3
-    }
-
-    fun getEffectiveness(source: ElementalType, target: Iterable<ElementalType>) : Int {
-        return getEffectivenessInternal(source, target)
-    }
-
-
     private fun getFormatedName(name: String) : String {
         return name[0].uppercase() + name.substring(1)
     }
 
-    private fun getEffectivenessInternal(source: ElementalType, target: Any): Int {
-        val sourceType: String = getFormatedName(source.name)
-
-        val targetTyping: Any = when (target) {
-            is String -> target
-            is ElementalType -> getFormatedName(target.name)
-            is Iterable<*> -> target.map { value -> if(value is ElementalType) getFormatedName(value.name) else value }.toList()
-            else -> {
-                CobblemonWikiGui.LOGGER.error("Invalid target for TypeChart.getEffectiveness")
-                target
-            }
+    private fun singleMultiplierByName(sourceTypeName: String, targetTypeName: String): Double {
+        val sourceType = getFormatedName(sourceTypeName)
+        val targetType = getFormatedName(targetTypeName)
+        return when (types[targetType]?.damageTaken?.get(sourceType)) {
+            1 -> 2.0 // super-effective
+            2 -> 0.5 // resist
+            3 -> 0.0 // immune
+            else -> 1.0 // neutral
         }
+    }
 
-        var totalTypeMod = 0
-        if (targetTyping is List<*>) {
-            for (type in targetTyping) {
-                if (type != null && type is String) {
-                    totalTypeMod += getEffectivenessInternal(source, type)
-                }
-            }
-            return totalTypeMod
+    /**
+     * Combined damage multiplier of an attacking type ([sourceTypeName]) against a Pokémon typed
+     * as all of [targetTypeNames]. Multiplies each own-type's multiplier together, matching real
+     * dual-type mechanics, so a 0x immunity from one type always dominates a >1x weakness
+     * contributed by the other type (previously weak/resist and immune were computed
+     * independently and could both "win" for the same attacking type — e.g. Ground vs.
+     * Electric/Flying showed up as both weak and immune).
+     *
+     * String-based (no Cobblemon [ElementalType] dependency) so it can be unit tested directly.
+     */
+    internal fun combinedMultiplierByName(sourceTypeName: String, targetTypeNames: Iterable<String>): Double {
+        var multiplier = 1.0
+        for (targetTypeName in targetTypeNames) {
+            multiplier *= singleMultiplierByName(sourceTypeName, targetTypeName)
         }
+        return multiplier
+    }
 
-        val typeData = types[targetTyping as String]
-        return when (typeData?.damageTaken?.get(sourceType)) {
-            1 -> 1 // super-effective
-            2 -> -1 // resist
-            else -> 0
-        }
+    fun getMultiplier(source: ElementalType, target: Iterable<ElementalType>): Double {
+        return combinedMultiplierByName(source.name, target.map { it.name })
     }
 }

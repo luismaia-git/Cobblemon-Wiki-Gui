@@ -30,7 +30,7 @@ object SpawnConditionGui {
 
     fun open(species: FormData, player: ServerPlayer, page: Int = 0): SimpleGui {
         val gui = SimpleGui(MenuType.GENERIC_9x4, player, false)
-        val redPane = GuiHelper.RED_PANE
+        val redPane = GuiHelper.fillerPane()
 
         gui.title = Component.literal(lang.spawnConditionsTitle).red()
 

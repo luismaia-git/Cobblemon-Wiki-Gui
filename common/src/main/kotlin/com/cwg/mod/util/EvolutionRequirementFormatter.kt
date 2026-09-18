@@ -47,14 +47,14 @@ object EvolutionRequirementFormatter {
                 val translation = tradePokemon.species?.let { speciesName ->
                     val tradeSpecies = PokemonSpecies.getByName(speciesName)
                     val displayName = tradeSpecies?.translatedName?.string ?: speciesName
-                    lang.tradeSpecific.format(displayName, linkCableTranslatedComponent.string).asTranslated()
-                } ?: lang.tradeAny.format(linkCableTranslatedComponent.string).asTranslated()
+                    lang.tradeSpecific.format(displayName, linkCableTranslatedComponent.string).text()
+                } ?: lang.tradeAny.format(linkCableTranslatedComponent.string).text()
 
                 loreRequirements.add(translation)
             }
             is ItemInteractionEvolution -> {
                 val itemName = evolution.requiredContext.toReadableLabel()
-                val text = lang.useItem.format(itemName).asTranslated()
+                val text = lang.useItem.format(itemName).text()
                 loreRequirements.add(text)
             }
 
@@ -62,7 +62,7 @@ object EvolutionRequirementFormatter {
                 val block = evolution.requiredContext
                 if (block is RegistryLikeTagCondition<Block>) requiredContextIdentifier = block.tag.location
                 val itemName = "block.${requiredContextIdentifier?.toLanguageKey()}".asTranslated()
-                val fullText = lang.rightClick.format( itemName.string).asTranslated()
+                val fullText = lang.rightClick.format( itemName.string).text()
                 loreRequirements.add(fullText)
             }
         }
@@ -71,12 +71,12 @@ object EvolutionRequirementFormatter {
             when (requirement) {
                 is BiomeRequirement -> {
                     requirement.biomeCondition?.let { biome ->
-                        val text = lang.biomeCondition.format(biome.toReadableLabel()).asTranslated()
+                        val text = lang.biomeCondition.format(biome.toReadableLabel()).text()
                         loreRequirements.add(text)
                     }
 
                     requirement.biomeAnticondition?.let { biome ->
-                        val text = lang.biomeAntiCondition.format(biome.toReadableLabel()).asTranslated()
+                        val text = lang.biomeAntiCondition.format(biome.toReadableLabel()).text()
                         loreRequirements.add(text)
                     }
                 }
@@ -87,7 +87,7 @@ object EvolutionRequirementFormatter {
                 }
                 is HeldItemRequirement -> {
                     val itemName = requirement.itemCondition.toReadableLabel()
-                    val text = lang.heldItem.format(itemName).asTranslated()
+                    val text = lang.heldItem.format(itemName).text()
                     loreRequirements.add(text)
                 }
                 is FriendshipRequirement -> {
@@ -172,12 +172,12 @@ object EvolutionRequirementFormatter {
                 }
                 is StructureRequirement -> {
                     requirement.structureCondition?.let { structure ->
-                        val text = lang.structureCondition.format(structure.toReadableLabel()).asTranslated()
+                        val text = lang.structureCondition.format(structure.toReadableLabel()).text()
                         loreRequirements.add(text)
                     }
 
                     requirement.structureAnticondition?.let { structure ->
-                        val text = lang.structureAntiCondition.format(structure.toReadableLabel()).asTranslated()
+                        val text = lang.structureAntiCondition.format(structure.toReadableLabel()).text()
                         loreRequirements.add(text)
                     }
                 }

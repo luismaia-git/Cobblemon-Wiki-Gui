@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.7.0
+
+**Compatible with Cobblemon 1.8.1 "Make Your Move"**
+
+### ✨ New
+- **Configurable filler item** — `fillerItem` in `main.json` lets server owners swap the red glass border/filler for any item id, or disable it entirely with `""` / `"none"`
+- **Configurable Wiki title** — `pokeWikiTitle` / `pokeWikiTitleWithForm` (with `%species%`/`%form%` placeholders) in `lang.json` make the main wiki screen's title customizable, matching the Pokedex/Spawn Conditions/Evolutions titles which already were
+- **"Report an Issue" button** — a corner slot on the Wiki and Pokedex screens sends a clickable GitHub issues link in chat. Toggle with `showGithubIssuesButton` in `main.json`
+
+### 🐛 Fixes
+- Dual-type Pokémon could show the same attacking type in both a weak/resistant list **and** the immune list (e.g. Ground vs. Electric/Flying) — weak/resist and immune were computed independently instead of as one combined multiplier where 0x always wins
+- The Type tile forced the whole "Type1/Type2" string to a hardcoded yellow instead of each type keeping its own color
+- Several `lang.json` entries silently ignored `&`-color codes because they went through a different (untranslated) text path than the rest — color codes now work consistently across all entries
+
 ## 2.6.0
 
 **Compatible with Cobblemon 1.8.1 "Make Your Move"**

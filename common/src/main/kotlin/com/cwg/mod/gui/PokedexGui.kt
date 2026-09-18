@@ -25,7 +25,7 @@ object PokedexGui {
 
     fun open(player: ServerPlayer, page: Int = 0): SimpleGui {
         val gui = SimpleGui(MenuType.GENERIC_9x6, player, false)
-        val redPane = GuiHelper.RED_PANE
+        val redPane = GuiHelper.fillerPane()
 
         gui.title = Component.literal(lang.pokedexTitle).red()
 
@@ -46,6 +46,10 @@ object PokedexGui {
             prevSlot = 45, nextSlot = 53, indicatorSlot = 49,
             currentPageLabel = lang.currentPage
         ) { newPage -> open(player, newPage) }
+
+        if (CobblemonWikiGui.config.showGithubIssuesButton) {
+            gui.setSlot(8, GuiHelper.githubIssuesButton())
+        }
 
         for (i in 0 until gui.size) {
             if (gui.getSlot(i) == null) {
