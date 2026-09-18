@@ -19,8 +19,8 @@ import net.minecraft.world.item.Items
 
 object PokeWikiGui {
     val lang = CobblemonWikiGui.langConfig
-    private val redPane: GuiElement = GuiHelper.RED_PANE
     fun open(formData: FormData, playerEntity: ServerPlayer): SimpleGui {
+        val redPane: GuiElement = GuiHelper.fillerPane()
 
         val content = contentMain(formData, playerEntity)
 
@@ -30,7 +30,13 @@ object PokeWikiGui {
 
         val gui = SimpleGui(MenuType.GENERIC_9x6, playerEntity, false)
         gui.title = Component.literal(
-            WikiGuiTitle.build(formData.name, formData.species.standardForm.name, formData.species.translatedName.string)
+            WikiGuiTitle.build(
+                formData.name,
+                formData.species.standardForm.name,
+                formData.species.translatedName.string,
+                lang.pokeWikiTitle,
+                lang.pokeWikiTitleWithForm
+            )
         ).red()
 
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL,gui, 0, 0, 8, redPane)
@@ -42,6 +48,10 @@ object PokeWikiGui {
         GuiHelper.setLine(GuiHelper.LineType.VERTICAL, gui, 8, 1, 3, redPane)
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL, gui, 5, 0, 2, redPane)
         GuiHelper.setLine(GuiHelper.LineType.HORIZONTAL, gui, 5, 6, 8, redPane)
+
+        if (CobblemonWikiGui.config.showGithubIssuesButton) {
+            gui.setSlot(53, GuiHelper.githubIssuesButton())
+        }
 
         for (j in content.indices) {
             gui.setSlot(CONTENT_SPACE[j], content[j])
@@ -83,7 +93,7 @@ object PokeWikiGui {
                     }
                 }
         }
-        return GuiHelper.createEmptyButton(redPane.itemStack)
+        return GuiHelper.createEmptyButton(GuiHelper.fillerPane().itemStack)
     }
 
     private fun contentMain(species: FormData, serverPlayerEntity: ServerPlayer): Array<GuiElement?> {

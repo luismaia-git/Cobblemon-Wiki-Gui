@@ -33,4 +33,19 @@ class PokeWikiGuiTitleTest {
     fun `buildWikiTitle parametrized`(formName: String, standardFormName: String, speciesDisplayName: String, expected: String) {
         assertEquals(expected, WikiGuiTitle.build(formName, standardFormName, speciesDisplayName))
     }
+
+    @Test
+    fun `buildWikiTitle uses custom templates when provided`() {
+        assertEquals(
+            "My Server Wiki",
+            WikiGuiTitle.build("zorua", "zorua", "Zorua", baseTitle = "My Server Wiki")
+        )
+        assertEquals(
+            "Zorua [Hisui]",
+            WikiGuiTitle.build(
+                "hisui", "zorua", "Zorua",
+                formTitleTemplate = "%species% [%form%]"
+            )
+        )
+    }
 }

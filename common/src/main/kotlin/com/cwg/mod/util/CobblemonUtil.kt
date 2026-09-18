@@ -39,7 +39,12 @@ object CobblemonUtil {
     }
 
    private fun getType(pokemon: FormData): MutableComponent {
-        return pokemon.types.map { it.displayName.copy() }.reduce { acc, next -> acc.plus("/").plus(next) }
+        // Each type keeps its own hue (like the Effectiveness tile's typeListComponent) instead
+        // of the whole "Type1/Type2" string being forced to one color, which previously made a
+        // dual-type mon's first type show the wrong (hardcoded yellow) color.
+        return pokemon.types
+            .map { type -> type.displayName.copy().setStyle(Style.EMPTY.withColor(type.hue)) }
+            .reduce { acc, next -> acc.append("/".text()).append(next) }
     }
 
     fun getRequirementsToWikiGui(evolution: Evolution): MutableList<Component> =
@@ -64,7 +69,7 @@ object CobblemonUtil {
     }
 
     fun getTypeToWikiGui(pokemon: FormData): MutableList<Component> {
-        return toWikiGui(getType(pokemon).yellow())
+        return toWikiGui(getType(pokemon))
     }
 
     fun getBaseStatsToWikiGui(pokemon: FormData): MutableList<Component> {
@@ -350,13 +355,11 @@ object CobblemonUtil {
         val immuneList = mutableListOf<ElementalType>()
 
         for (type in ElementalTypes.all()) {
-            val effectiveness = TypeChart.getEffectiveness(type, species.types)
+            val multiplier = TypeChart.getMultiplier(type, species.types)
             when {
-                effectiveness > 0 -> weaknessList.add(type)
-                effectiveness < 0 -> resistantList.add(type)
-            }
-            if (!TypeChart.getImmunity(type, species.types)) {
-                immuneList.add(type)
+                multiplier == 0.0 -> immuneList.add(type)
+                multiplier > 1.0 -> weaknessList.add(type)
+                multiplier < 1.0 -> resistantList.add(type)
             }
         }
 

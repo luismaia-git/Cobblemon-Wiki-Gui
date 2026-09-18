@@ -8,16 +8,59 @@ import com.cwg.mod.CobblemonWikiGui
 import eu.pb4.sgui.api.elements.GuiElement
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
+import net.minecraft.ChatFormatting
 import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import net.minecraft.world.level.block.Blocks
 
 object GuiHelper {
 
-    val RED_PANE: GuiElement = createEmptyButton(ItemStack(Blocks.RED_STAINED_GLASS_PANE, 1)).build()
+    private const val GITHUB_ISSUES_URL = "https://github.com/luismaia-git/Cobblemon-Wiki-Gui/issues"
+
+    /**
+     * Builds a fresh filler/border button from the configured filler item id each call, so
+     * `/cwg reload` picks up config changes without a restart. "" or "none" disables filler
+     * (renders as an empty slot); an unknown/invalid id falls back to red_stained_glass_pane.
+     */
+    fun fillerPane(): GuiElement = createEmptyButton(resolveFillerItem()).build()
+
+    private fun resolveFillerItem(): ItemStack {
+        val id = CobblemonWikiGui.config.fillerItem.trim()
+        if (id.isEmpty() || id.equals("none", ignoreCase = true)) {
+            return ItemStack(Items.AIR)
+        }
+        val item = ResourceLocation.tryParse(id)
+            ?.let { BuiltInRegistries.ITEM.getOptional(it).orElse(null) }
+            ?: Items.RED_STAINED_GLASS_PANE
+        return ItemStack(item, 1)
+    }
+
+    /**
+     * "Report an Issue" button: clicking it doesn't (and can't) open a browser directly from an
+     * inventory slot, so it sends the player a chat message with a clickable OPEN_URL link
+     * instead. Gated by `config.showGithubIssuesButton` at the call site.
+     */
+    fun githubIssuesButton(): GuiElement {
+        val lang = CobblemonWikiGui.langConfig
+        return createEmptyButton(ItemStack(Items.WRITABLE_BOOK))
+            .setName(lang.githubIssuesButtonName.text())
+            .setLore(listOf(lang.githubIssuesButtonLore.text()))
+            .setCallback { _, _, _, gui ->
+                gui.player.sendSystemMessage(
+                    lang.githubIssuesLinkText.text().withStyle {
+                        it.withColor(ChatFormatting.AQUA)
+                            .withUnderlined(true)
+                            .withClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, GITHUB_ISSUES_URL))
+                    }
+                )
+            }
+            .build()
+    }
 
     enum class LineType {
         HORIZONTAL,
