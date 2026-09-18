@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 2.7.0
+
+**Compatible with Cobblemon 1.8.1 "Make Your Move"**
 
 ### ✨ New
 - **Configurable filler item** — `fillerItem` in `main.json` lets server owners swap the red glass border/filler for any item id, or disable it entirely with `""` / `"none"`
